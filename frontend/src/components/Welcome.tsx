@@ -11,7 +11,7 @@ import Dialog from './Dialog';
 import { type Player as AuthPlayer } from '../services/authService';
 import { useAccount } from 'wagmi';
 import { toast } from 'sonner';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit';
 
 interface WelcomeProps {
   setGameState: (state: any) => void
@@ -301,18 +301,15 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
 
         if (!username || !walletAddress) return;
 
-        // Disable submit button during request
         submitBtn.disabled = true;
         submitBtn.textContent = 'Creating...';
         errorMsg.style.display = 'none';
 
         try {
-          // Call onUsernameSet with wallet address
           await onUsernameSet(username, walletAddress);
           callback(username);
           modal.remove();
         } catch (error: any) {
-          // Handle username taken error
           if (error.message === 'USERNAME_TAKEN') {
             errorMsg.textContent = `Username "${username}" is already taken. Please choose another.`;
             errorMsg.style.display = 'block';
@@ -323,7 +320,6 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
             errorMsg.style.display = 'block';
           }
 
-          // Re-enable submit button
           submitBtn.disabled = false;
           submitBtn.textContent = 'Create Profile';
         }
@@ -388,7 +384,6 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
       document.body.appendChild(modal);
       modal.showModal();
 
-      // Clear and focus the input
       const input = document.getElementById('roomCode') as HTMLInputElement;
       if (input) {
         input.value = '';
@@ -436,7 +431,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
       showAlert('Please connect your wallet to create a staked match', 'Wallet Not Connected');
       return;
     }
-    promptUsername((username) => {
+    promptUsername(() => {
       const modal = document.createElement('dialog');
       modal.className = 'stake-modal';
       modal.innerHTML = `
@@ -598,7 +593,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     <div className="welcome page-shell">
       <div className="welcome__top surface-panel surface-panel--compact">
         <div className="welcome__wallet">
-          <PushUniversalAccountButton />
+          <ConnectButton />
         </div>
         <div className="welcome__links">
           {savedUsername && (

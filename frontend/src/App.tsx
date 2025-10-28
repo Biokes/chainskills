@@ -66,7 +66,6 @@ function App() {
         setIsAuthenticating(!isAuthenticating)
       }
     }
-
     authenticate()
   }, [isConnected, address])
 
@@ -164,7 +163,6 @@ function App() {
           element={<PowerUpDashboard walletAddress={address as string} />}
         />
       </Routes>
-
       <SpeakerIcon />
     </div>
   )

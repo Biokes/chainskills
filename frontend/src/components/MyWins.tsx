@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useClaimPrize } from '../hooks/usePushContract';
-import { BACKEND_URL, PUSH_CHAIN_TESTNET_EXPLORER } from '../constants';
+import { BACKEND_URL, HEDERA_TESTNET_EXPLORER } from '../constants';
 import '../styles/MyWins.css';
 import { parseTransactionError } from '../utils/errorParser';
 import AddressDisplay from './AddressDisplay';
@@ -331,7 +331,7 @@ const MyWins: FC = () => {
                         <span className="detail-label">Claim Tx:</span>
                         <span className="detail-value tx-hash">
                           <a
-                            href={`${PUSH_CHAIN_TESTNET_EXPLORER}/tx/${game.claimTxHash}`}
+                            href={`${HEDERA_TESTNET_EXPLORER}/tx/${game.claimTxHash}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >

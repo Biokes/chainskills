@@ -1,7 +1,7 @@
 export interface ParsedError {
   title: string;
   message: string;
-  isUserAction: boolean; // true if user can retry
+  isUserAction: boolean;
 }
 
 export function parseTransactionError(error: any): ParsedError {

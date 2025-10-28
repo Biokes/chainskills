@@ -1,6 +1,5 @@
 export const STORAGE_KEY = 'pong_username'
 
-// Game settings
 export const INITIAL_BALL_SPEED = 31
 export const PADDLE_SPEED = 0.01
 export const INITIAL_RATING = 1000
@@ -9,9 +8,6 @@ export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost
 
 export const PONG_ESCROW_ADDRESS = import.meta.env.VITE_PONG_ESCROW_ADDRESS as `0x${string}`
 export const PONG_POWERUPS_ADDRESS = import.meta.env.VITE_PONG_POWERUPS_ADDRESS as `0x${string}`
-
-// if (!PONG_ESCROW_ADDRESS || PONG_ESCROW_ADDRESS === 'undefined') {
-// }
 
 export const POWER_UP_METADATA = {
   1: {
@@ -54,28 +50,4 @@ export const MatchStatus = {
   REFUNDED: 4,
 } as const
 
-
-export const PUSH_CHAIN_TESTNET = {
-  id: 42101,
-  name: 'Push Chain Testnet',
-  nativeCurrency: { 
-    name: 'Push Chain', 
-    symbol: 'PC', 
-    decimals: 18 
-  },
-  rpcUrls: { 
-    default: { 
-      http: [import.meta.env.VITE_PUSH_RPC_URL || 'https://evm.rpc-testnet-donut-node1.push.org/'] 
-    } 
-  },
-  blockExplorers: { 
-    default: { 
-      name: 'Push Scan', 
-      url: 'https://donut.push.network' 
-    } 
-  },
-  testnet: true,
-} as const
-
-// Push Chain Testnet Explorer URL
-export const PUSH_CHAIN_TESTNET_EXPLORER = 'https://donut.push.network'
+export const HEDERA_TESTNET_EXPLORER = 'https://hashscan.io/testnet/'

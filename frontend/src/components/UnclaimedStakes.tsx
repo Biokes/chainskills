@@ -1,10 +1,8 @@
 import { useState, useEffect, useCallback, type FC } from "react";
 import { useNavigate } from "react-router-dom";
-// import { usePushWalletContext } from "@pushchain/ui-kit";
-// import { usePushChainClient } from "@pushchain/ui-kit";
 import { useClaimRefundForAbandoned } from "../hooks/usePushContract";
 import { formatEther } from "viem";
-import { BACKEND_URL, PUSH_CHAIN_TESTNET_EXPLORER } from "../constants";
+import { BACKEND_URL, HEDERA_TESTNET_EXPLORER } from "../constants";
 import { parseTransactionError } from "../utils/errorParser";
 import AddressDisplay from "./AddressDisplay";
 import "../styles/UnclaimedStakes.css";
@@ -222,7 +220,7 @@ const UnclaimedStakes: FC = () => {
                   {claimingGameId === stake._id && claimHash && (
                     <div className="tx-link">
                       <a
-                        href={`${PUSH_CHAIN_TESTNET_EXPLORER}/tx/${claimHash}`}
+                        href={`${HEDERA_TESTNET_EXPLORER}/tx/${claimHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -246,7 +244,7 @@ const UnclaimedStakes: FC = () => {
             <p>Please confirm the transaction in your wallet</p>
             {claimHash && (
               <a
-                href={`${PUSH_CHAIN_TESTNET_EXPLORER}/tx/${claimHash}`}
+                href={`${HEDERA_TESTNET_EXPLORER}/tx/${claimHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="tx-link-overlay"

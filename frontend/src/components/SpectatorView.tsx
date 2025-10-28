@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback, FC } from 'react';
+import { useEffect, useRef, useState, useCallback, type FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import io, { Socket } from 'socket.io-client';
 import '../styles/Game.css';

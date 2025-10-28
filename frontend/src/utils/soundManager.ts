@@ -1,8 +1,3 @@
-/**
- * Sound Manager for PONG-IT
- * Handles game sound effects and procedural music generation
- */
-
 interface Note {
   frequency: number
   duration: number
@@ -59,7 +54,6 @@ class SoundManager {
     
     return new Promise((resolve) => {
       try {
-        // Create audio context if it doesn't exist
         if (!this.audioContext) {
           const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
           this.audioContext = new AudioContextClass()
@@ -69,11 +63,6 @@ class SoundManager {
           this.audioContext.resume().catch(e => {
           })
         }
-        
-        
-        // Load audio files silently without playing them
-        
-        // This prevents the "play() request was interrupted" error
         const silentBuffer = this.audioContext.createBuffer(1, 1, 22050)
         const silentSource = this.audioContext.createBufferSource()
         silentSource.buffer = silentBuffer
@@ -83,8 +72,8 @@ class SoundManager {
         this.initialized = true
         resolve()
       } catch (e) {
-        this.initialized = false // Mark as not initialized so we can try again
-        resolve() // Resolve anyway to avoid blocking
+        this.initialized = false;
+        resolve();
       }
     })
   }
@@ -113,14 +102,10 @@ class SoundManager {
       if (this.isMuted) {
         return
       }
-      
       if (!this.initialized) {
         await this.init()
       }
-      
-      // Ensure audio context is running
       this.ensureAudioContext()
-      
       await playFunction()
     } catch (error) {
     }
@@ -145,18 +130,14 @@ class SoundManager {
   }
 
   setMaxPlaybackDuration(durationMs = 30000, shouldAutoStop = false): void {
-    // Stop any existing timeout
     if (this.maxDurationTimeout) {
       clearTimeout(this.maxDurationTimeout)
       this.maxDurationTimeout = null
     }
-    
-    // Only set the timeout if shouldAutoStop is true
     if (shouldAutoStop) {
       this.maxDurationTimeout = setTimeout(() => {
         this.stopAll()
       }, durationMs)
-    } else {
     }
   }
 

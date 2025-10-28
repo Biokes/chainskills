@@ -4,7 +4,7 @@ import {
   useMemo,
   useState,
   type FC,
-  FormEvent,
+  type FormEvent,
 } from "react";
 import { useNavigate } from "react-router-dom";
 import {

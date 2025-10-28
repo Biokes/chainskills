@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, type FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { usePushWalletContext } from "@pushchain/ui-kit";
-import { usePushChainClient } from "@pushchain/ui-kit";
+// import { usePushWalletContext } from "@pushchain/ui-kit";
+// import { usePushChainClient } from "@pushchain/ui-kit";
 import { useClaimRefundForAbandoned } from "../hooks/usePushContract";
 import { formatEther } from "viem";
 import { BACKEND_URL, PUSH_CHAIN_TESTNET_EXPLORER } from "../constants";
 import { parseTransactionError } from "../utils/errorParser";
 import AddressDisplay from "./AddressDisplay";
 import "../styles/UnclaimedStakes.css";
+import { useAccount } from "wagmi";
 
 interface AbandonedStake {
   _id: string;
@@ -25,10 +26,9 @@ interface AbandonedStake {
 
 const UnclaimedStakes: FC = () => {
   const navigate = useNavigate();
-  const { connectionStatus } = usePushWalletContext();
-  const { pushChainClient } = usePushChainClient();
-  const isConnected = connectionStatus === "connected";
-  const address = pushChainClient?.universal?.account?.toLowerCase() || null;
+  const {isConnected, address } = useAccount();
+  // const { pushChainClient } = usePushChainClient();
+  // const address = pushChainClient?.universal?.account?.toLowerCase() || null;
 
   const [stakes, setStakes] = useState<AbandonedStake[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,7 +45,6 @@ const UnclaimedStakes: FC = () => {
     error: claimError,
   } = useClaimRefundForAbandoned();
 
-  // Fetch abandoned stakes
   const fetchAbandonedStakes = useCallback(async () => {
     if (!address) return;
 

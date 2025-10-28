@@ -1,11 +1,3 @@
-/**
- * Authentication Service - Wallet-based Player Authentication
- * 
- * This service handles player authentication using wallet addresses.
- * - For cross-chain wallets: Uses UEA (Universal Executor Account)
- * - For native Push Chain wallets: Uses EOA (Externally Owned Account)
- */
-
 import { BACKEND_URL } from '../constants';
 
 export interface Player {
@@ -32,13 +24,7 @@ export interface AuthError {
   usernameTaken?: boolean;
 }
 
-/**
- * Authenticate or register a player using their wallet address
- * 
- * @param walletAddress - UEA for cross-chain, EOA for native Push Chain
- * @param name - Display name (required for new players)
- * @returns Player data and registration status
- */
+
 export async function authenticatePlayer(
   walletAddress: string,
   name?: string
@@ -60,12 +46,9 @@ export async function authenticatePlayer(
     const data = await response.json();
 
     if (!response.ok) {
-      // 404 with needsUsername = true means new player needs to set username
       if (response.status === 404 && data.needsUsername) {
         throw new Error('USERNAME_REQUIRED');
       }
-      
-      // 409 with usernameTaken = true means username is already taken
       if (response.status === 409 && data.usernameTaken) {
         throw new Error('USERNAME_TAKEN');
       }
@@ -80,12 +63,6 @@ export async function authenticatePlayer(
   }
 }
 
-/**
- * Check if a player exists for a wallet address
- * 
- * @param walletAddress - UEA or EOA
- * @returns Player data or null if not found
- */
 export async function getPlayerByWallet(
   walletAddress: string
 ): Promise<Player | null> {
@@ -111,12 +88,6 @@ export async function getPlayerByWallet(
   }
 }
 
-/**
- * Update player's display name
- * 
- * @param walletAddress - UEA or EOA
- * @param newName - New display name
- */
 export async function updatePlayerName(
   walletAddress: string,
   newName: string

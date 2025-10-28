@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, FC } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BACKEND_URL } from '../constants';
 import AddressDisplay from './AddressDisplay';
@@ -36,7 +36,7 @@ interface Pagination {
   hasMore: boolean
 }
 
-const GameHistory: FC<GameHistoryProps> = ({ savedUsername }) => {
+const GameHistory: React.FC<GameHistoryProps> = ({ savedUsername }) => {
   const navigate = useNavigate();
   const [games, setGames] = useState<Game[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -51,7 +51,6 @@ const GameHistory: FC<GameHistoryProps> = ({ savedUsername }) => {
     hasMore: false 
   });
 
-  // Fetch game history
   const fetchGameHistory = useCallback(async () => {
     if (!savedUsername) return;
 

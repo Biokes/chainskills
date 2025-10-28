@@ -1,7 +1,3 @@
-/**
- * Parse blockchain/contract errors into user-friendly messages
- */
-
 export interface ParsedError {
   title: string;
   message: string;

@@ -1,13 +1,11 @@
 import { useState, useEffect, useCallback, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePushWalletContext, usePushChainClient } from '@pushchain/ui-kit';
 import { useClaimPrize } from '../hooks/usePushContract';
-import { useExecutorAddress } from '../hooks/useExecutorAddress';
-import { formatEther } from 'viem';
 import { BACKEND_URL, PUSH_CHAIN_TESTNET_EXPLORER } from '../constants';
 import '../styles/MyWins.css';
 import { parseTransactionError } from '../utils/errorParser';
 import AddressDisplay from './AddressDisplay';
+import { useAccount } from 'wagmi';
 
 interface Game {
   _id: string
@@ -32,19 +30,7 @@ interface Pagination {
 
 const MyWins: FC = () => {
   const navigate = useNavigate();
-  
-  // Push Chain wallet context
-  const { connectionStatus } = usePushWalletContext();
-  const { pushChainClient } = usePushChainClient();
-  const isConnected = connectionStatus === 'connected';
-  
-  // Get the user's account address from Push Chain client
-  const originAddress = pushChainClient?.universal?.account?.toLowerCase() || null;
-  
-  // CRITICAL: Get the Universal Executor Account (UEA) address
-  // The contract sees UEA as msg.sender, not the origin address
-  const { executorAddress, isLoading: isLoadingUEA } = useExecutorAddress();
-  
+  const {isConnected, address, isConnecting } = useAccount();  
   const [wins, setWins] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,11 +52,9 @@ const MyWins: FC = () => {
     error: claimError
   } = useClaimPrize();
 
-  // Fetch user's wins - CRITICAL: Use UEA address for filtering
   const fetchWins = useCallback(async () => {
-    // CRITICAL: Must use executorAddress (UEA) for filtering wins
-    // because the contract stores the UEA as the winner, not the origin address
-    if (!executorAddress) {
+  
+    if (!address) {
       return;
     }
 
@@ -80,7 +64,7 @@ const MyWins: FC = () => {
       setError(null);
 
       const params = new URLSearchParams({
-        address: executorAddress, // CRITICAL: Use UEA, not origin address!
+        address: address,
         limit: pagination.limit.toString(),
         offset: pagination.offset.toString()
       });
@@ -99,7 +83,7 @@ const MyWins: FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [executorAddress, originAddress, pagination.limit, pagination.offset]);
+  }, [address, pagination.limit, pagination.offset]);
 
   const loadMore = () => {
     setPagination(prev => ({
@@ -109,12 +93,12 @@ const MyWins: FC = () => {
   };
 
   useEffect(() => {
-    if (isConnected && executorAddress && !isLoadingUEA) {
+    if (isConnected && address && !isConnecting) {
       fetchWins();
     } else {
       setLoading(false);
     }
-  }, [isConnected, executorAddress, isLoadingUEA, fetchWins]);
+  }, [isConnected, address, isConnecting, fetchWins]);
 
   // Handle claim success
   useEffect(() => {
@@ -128,10 +112,10 @@ const MyWins: FC = () => {
       })
         .then(res => res.json())
         .then(data => {
-          // Refresh wins list
           fetchWins();
         })
         .catch(err => {
+          console.error("error: ", err)
         });
 
       setClaimingGameId(null);
@@ -173,8 +157,6 @@ const MyWins: FC = () => {
   const formatPrizeAmount = (stakeAmount: string): string => {
     const prizeValue = parseFloat(stakeAmount) * 2;
     if (isNaN(prizeValue)) return '0';
-    
-    // Format to 4 significant figures
     return parseFloat(prizeValue.toPrecision(4)).toString();
   };
 
@@ -193,7 +175,7 @@ const MyWins: FC = () => {
   }
 
   // Show loading while UEA is being resolved
-  if (isLoadingUEA || !executorAddress) {
+  if (isConnecting || !address) {
     return (
       <div className="my-wins-container">
         <div className="my-wins-header">
@@ -213,7 +195,6 @@ const MyWins: FC = () => {
         <h1>My Wins</h1>
       </div>
 
-      {/* Transaction Progress Modal */}
       {claimingGameId && (
         <div className="transaction-overlay">
           <div className="transaction-modal">

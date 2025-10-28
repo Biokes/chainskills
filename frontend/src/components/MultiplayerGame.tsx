@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo, type FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { usePushWalletContext, usePushChainClient } from '@pushchain/ui-kit';
 import io, { Socket } from 'socket.io-client';
 import '../styles/Game.css';
 import { BACKEND_URL, INITIAL_RATING, POWER_UP_METADATA } from '../constants';
@@ -12,6 +11,8 @@ import Dialog from './Dialog';
 import AddressDisplay from './AddressDisplay';
 import { type Player as AuthPlayer } from '../services/authService';
 import { getPowerUpSummary, type PowerUpSummary } from '../services/powerUpService';
+import { useAccount } from 'wagmi';
+import { toast } from 'sonner';
 
 interface MultiplayerGameProps {
   username: string | null
@@ -102,16 +103,10 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
   const [keyboardPaddleY, setKeyboardPaddleY] = useState(0);
   const keysPressed = useRef<{ ArrowUp: boolean; ArrowDown: boolean }>({ ArrowUp: false, ArrowDown: false });
   const keyboardIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { address, isConnected } = useAccount()
 
-  // Push Chain wallet context
-  const { connectionStatus } = usePushWalletContext();
-  const { pushChainClient } = usePushChainClient();
-  const isConnected = connectionStatus === 'connected';
-  
-  // Get the user's account address from Push Chain client
-  const address = pushChainClient?.universal?.account?.toLowerCase() || null;
+  const userAddress = address?.toLowerCase() || null;
 
-  // Push Chain staking hook for Player2
   const {
     stakeAsPlayer2,
     hash: player2StakingTxHash,
@@ -202,7 +197,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     Object.values(gameData.paddles).forEach((paddle, index) => {
       const x = index === 0 ? paddleWidth : width - paddleWidth * 2;
       const y = (paddle.y + 1) * height / 2 - paddleHeight / 2;
-      
+
       ctx.beginPath();
       ctx.roundRect(x, y, paddleWidth, paddleHeight, paddleRadius);
       ctx.fill();
@@ -256,14 +251,11 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     });
   }, [gameData, isWaiting, roomCode]);
 
-  // Cursor auto-hide management
   const resetCursorTimeout = useCallback(() => {
     if (cursorTimeoutRef.current) {
       clearTimeout(cursorTimeoutRef.current);
     }
-
     setIsCursorHidden(false);
-
     cursorTimeoutRef.current = setTimeout(() => {
       setIsCursorHidden(true);
     }, 3000);
@@ -303,10 +295,8 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     }
   }, [isWaiting]);
 
-  // Keyboard controls
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (isWaiting || !socketRef.current) return;
-
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       e.preventDefault();
       keysPressed.current[e.key] = true;
@@ -358,21 +348,14 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
   }, [isPaused]);
 
   const handleForfeitGame = useCallback(() => {
-    // Check if this is a staked game with no opponent (abandonment scenario)
     const hasOpponent = gameData.players.length > 1 && gameData.players[1]?.name;
-    
     if (isStakedGame && !hasOpponent && isWaiting) {
-      // This is abandonment, not forfeit
       showConfirm(
         'Leave the room? You can reclaim your stake from "Unclaimed Stakes".',
         () => {
           if (socketRef.current && roomCode) {
-            
-            // Use emit with callback to ensure backend received the event
             socketRef.current.emit('leaveAbandonedRoom', { roomCode }, (ack: any) => {
             });
-            
-            // Wait for backend to process before navigating (increased timeout)
             setTimeout(() => {
               soundManager.stopAll();
               navigate('/');
@@ -386,7 +369,6 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
         'Leave Room?'
       );
     } else {
-      // Normal forfeit - opponent exists
       showConfirm(
         'Are you sure you want to forfeit? You will lose the game.',
         () => {
@@ -428,13 +410,12 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
       setIsPlayer2Staking(false);
     }
   }, [isConnected, stakingData, stakeAsPlayer2, showAlert]);
-
-  const showInfoToast = useCallback((_title?: string, _message?: string) => {
-    // Intentionally left blank to keep gameplay uninterrupted.
+  const showInfoToast = useCallback((_message?: string) => {
+    toast.info(_message);
   }, []);
 
-  const showSuccessToast = useCallback((_title?: string, _message?: string) => {
-    // Intentionally left blank to keep gameplay uninterrupted.
+  const showSuccessToast = useCallback((_message?: string) => {
+    toast.success(_message);
   }, []);
 
   const handleActivateSpeedBoost = useCallback(() => {
@@ -547,18 +528,15 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     };
   }, [walletAddress]);
 
-  // Handle successful Player2 staking transaction
   useEffect(() => {
-
     if (isPlayer2StakingSuccess && player2StakingTxHash && stakingData) {
-
       fetch(`${BACKEND_URL}/games`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           roomCode: stakingData.roomCode,
           player2: { name: username, rating: 800 },
-          player2Address: address,
+          player2Address: userAddress,
           player2TxHash: player2StakingTxHash,
           status: 'ready'
         })
@@ -579,7 +557,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
       setShowPlayer2StakingModal(false);
       setStakingData(null);
     }
-  }, [isPlayer2StakingSuccess, player2StakingTxHash, stakingData, username, address]);
+  }, [isPlayer2StakingSuccess, player2StakingTxHash, stakingData, username, userAddress]);
 
   // Handle Player2 staking errors
   useEffect(() => {
@@ -599,7 +577,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
       withCredentials: true,
       transports: ['websocket'],
       path: '/socket.io/',
-      query: { 
+      query: {
         username,
         walletAddress: walletAddress || undefined
       }
@@ -662,7 +640,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     socket.on('powerUpSummary', (payload: { summary?: PowerUpSummary; source?: string; ownerWallet?: string } | PowerUpSummary) => {
       const summary = 'summary' in payload ? payload.summary : payload;
       if (summary) {
-        setPowerUpSummary(summary);
+        setPowerUpSummary(summary as PowerUpSummary);
       }
 
       if (typeof payload === 'object' && 'source' in payload) {
@@ -756,15 +734,15 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
       if (data?.roomCode) {
         setRoomCode(prev => prev || data.roomCode || null);
       }
-    const normalizedExtras = (data.extraBalls ?? []).map((ball: any) =>
-      typeof ball?.x === 'number' && typeof ball?.y === 'number'
-        ? { x: ball.x, y: ball.y }
-        : {
+      const normalizedExtras = (data.extraBalls ?? []).map((ball: any) =>
+        typeof ball?.x === 'number' && typeof ball?.y === 'number'
+          ? { x: ball.x, y: ball.y }
+          : {
             x: typeof ball?.pos?.x === 'number' ? ball.pos.x : 0,
             y: typeof ball?.pos?.y === 'number' ? ball.pos.y : 0,
           }
-    );
-    const next = { ...data, extraBalls: normalizedExtras };
+      );
+      const next = { ...data, extraBalls: normalizedExtras };
       setGameData(next);
       gameDataRef.current = next;
       prevGameDataRef.current = next;
@@ -781,8 +759,8 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
         }
 
         if (data?.score && prevGameDataRef.current?.score &&
-            (data.score[0] !== prevGameDataRef.current.score[0] ||
-             data.score[1] !== prevGameDataRef.current.score[1])) {
+          (data.score[0] !== prevGameDataRef.current.score[0] ||
+            data.score[1] !== prevGameDataRef.current.score[1])) {
           soundManager.playWithErrorHandling(
             () => soundManager.playScoreSound(),
             'Score sound failed'
@@ -794,9 +772,9 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
         typeof ball?.x === 'number' && typeof ball?.y === 'number'
           ? { x: ball.x, y: ball.y }
           : {
-              x: typeof ball?.pos?.x === 'number' ? ball.pos.x : 0,
-              y: typeof ball?.pos?.y === 'number' ? ball.pos.y : 0,
-            }
+            x: typeof ball?.pos?.x === 'number' ? ball.pos.x : 0,
+            y: typeof ball?.pos?.y === 'number' ? ball.pos.y : 0,
+          }
       );
       const next = { ...data, extraBalls: normalizedExtras };
       gameDataRef.current = next;
@@ -819,22 +797,18 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
       setActiveShield(null);
       setPowerUpMessage(null);
       setShieldMessage(null);
-
-      // Don't disconnect socket on game over - keep it alive for rematch
-      // The GameOver component will create its own socket for game-over state
-      
-      // Set flag to prevent socket disconnection on unmount
+    
       isNavigatingToGameOver.current = true;
 
       navigate('/game-over', {
         state: {
           ...result,
           isWinner,
-          playerName: username, // Pass username for GameOver socket connection
+          playerName: username,
           message: isWinner ? 'You Won!' : 'You Lost!',
           rating: result.ratings?.[socket.id],
           finalScore: result.finalScore || result.stats?.score,
-          roomCode: result.roomCode // Pass roomCode for cleanup later
+          roomCode: result.roomCode 
         }
       });
     });
@@ -842,15 +816,13 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     socket.on('gamePaused', (data: { pausedBy: string; pausesRemaining: number }) => {
       setIsPaused(true);
       setPausedBy(data.pausedBy);
-
       if (data.pausedBy === username) {
         setPausesRemaining(data.pausesRemaining);
-        showSuccessToast('Pause used', `No more pauses remaining.`);
+        toast.info('No more pauses remaining.', {duration: 1000});
       } else {
         setOpponentPausesRemaining(data.pausesRemaining);
-        showInfoToast(`${data.pausedBy} paused`, `${data.pausedBy} has no more pauses.`);
+        toast.info(`${data.pausedBy} paused`, {duration:3000});
       }
-
       setPauseCountdown(10);
     });
 
@@ -872,7 +844,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     });
 
     socket.on('playerForfeitedSelf', () => {
-      showInfoToast('You forfeited', 'Returning to home.');
+      toast.info('You forfeited \nReturning to home.', {duration:1000});
       soundManager.stopAll();
       setTimeout(() => navigate('/'), 500);
     });
@@ -906,7 +878,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     });
 
     socket.on('abandonmentProcessed', (data: { message: string }) => {
-      // Room has been marked as abandoned, refund will be available
+      toast.info("Game was cancelled");
     });
 
     socket.on('error', (error: { message: string }) => {
@@ -914,13 +886,10 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     });
 
     return () => {
-      // Don't disconnect if navigating to game-over screen (keep socket alive for rematch)
       if (isNavigatingToGameOver.current) {
-        socket.removeAllListeners(); // Still remove listeners to prevent memory leaks
+        socket.removeAllListeners();
         return;
       }
-      
-      // Normal cleanup for other navigation (back to home, etc.)
       socket.removeAllListeners();
       socket.disconnect();
     };
@@ -942,7 +911,6 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     };
   }, [setupSocket, username, navigate, showAlert]);
 
-  // Pause countdown timer
   useEffect(() => {
     if (pauseCountdown === null) return;
 
@@ -1003,7 +971,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -1092,22 +1060,17 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
   }, []);
 
   const handleLeaveGame = useCallback(() => {
-    // Check if this is a staked game with no opponent (abandonment scenario)
     const hasOpponent = gameData.players.length > 1 && gameData.players[1]?.name;
-    
-    
+
+
     if (isStakedGame && !hasOpponent && isWaiting) {
-      // This is abandonment, not forfeit
       showConfirm(
         'Leave the room? You can reclaim your stake from "Unclaimed Stakes".',
         () => {
           if (socketRef.current && roomCode) {
-            
-            // Use emit with callback to ensure backend received the event
             socketRef.current.emit('leaveAbandonedRoom', { roomCode }, (ack: any) => {
             });
-            
-            // Wait for backend to process before navigating (increased timeout)
+
             setTimeout(() => {
               soundManager.stopAll();
               navigate('/');
@@ -1121,7 +1084,6 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
         'Leave Room?'
       );
     } else {
-      // Normal forfeit - opponent exists or not staked
       showConfirm(
         'Are you sure you want to leave? You will forfeit the game.',
         () => {
@@ -1152,8 +1114,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
       <button onClick={handleLeaveGame} className="back-button" aria-label="Leave game">
         ← Back
       </button>
-      
-      {/* Paddle indicators */}
+
       {!isWaiting && (isPlayer1 || isPlayer2) && (
         <>
           <div className={`paddle-indicator left ${isPlayer1 ? 'active' : ''}`}>
@@ -1353,7 +1314,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
                 </div>
                 <p style={{ fontSize: '14px', color: '#888', marginBottom: '20px' }}>
                   {isConnected
-                    ? `Your wallet: ${address?.slice(0, 10)}...${address?.slice(-4)}`
+                    ? `Your wallet: ${userAddress?.slice(0, 10)}...${userAddress?.slice(-4)}`
                     : 'Please connect your wallet first'}
                 </p>
                 <div className="rematch-buttons">
@@ -1369,7 +1330,6 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
                       setShowPlayer2StakingModal(false);
                       setStakingData(null);
                       setStakingErrorMessage(null);
-                      // Emit leaveRoom before navigating so backend knows we're leaving before staking
                       if (socketRef.current && stakingData?.roomCode) {
                         socketRef.current.emit('leaveRoomBeforeStaking', { roomCode: stakingData.roomCode });
                       }
@@ -1385,7 +1345,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
               <>
                 <p style={{ fontSize: '14px', color: '#888', marginBottom: '20px' }}>
                   {isConnected
-                    ? `Your wallet: ${address?.slice(0, 10)}...${address?.slice(-4)}`
+                    ? `Your wallet: ${userAddress?.slice(0, 10)}...${userAddress?.slice(-4)}`
                     : 'Please connect your wallet first'}
                 </p>
                 <div className="rematch-buttons">

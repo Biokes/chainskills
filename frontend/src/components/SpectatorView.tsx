@@ -30,8 +30,6 @@ interface LocationState {
 const SpectatorView: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const socketRef = useRef<Socket | null>(null);
-  
-  // Dialog hook
   const { dialogState, showAlert, handleConfirm, handleCancel } = useDialog();
   
   const [gameData, setGameData] = useState<GameData>({
@@ -189,6 +187,7 @@ const SpectatorView: FC = () => {
     socket.on('gameOver', (result: any) => {
       showAlert('Game has ended!', 'Game Over');
       setTimeout(() => navigate('/'), 2000);
+      console.log(result)
     });
 
     socket.on('error', (error: { message: string }) => {

@@ -31,7 +31,14 @@ const config = getDefaultConfig({
   ssr: false,
 });
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+})
 
 function ChainSwitcher({ children }: { children: React.ReactNode }) {
   const { isConnected } = useAccount();

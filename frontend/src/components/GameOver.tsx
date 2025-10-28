@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, FC } from 'react';
+import React,{ useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import io, { Socket } from 'socket.io-client';
-import { STORAGE_KEY, BACKEND_URL } from '../constants';
+import { BACKEND_URL } from '../constants';
 import '../styles/GameOver.css';
 import { useDialog } from '../hooks/useDialog';
 import Dialog from './Dialog';
@@ -21,11 +21,7 @@ interface GameOverResult {
   }
 }
 
-interface LocationState {
-  result?: GameOverResult
-}
-
-const GameOver: FC = () => {
+const GameOver: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const result = (location.state as any) as GameOverResult | undefined;
@@ -33,7 +29,6 @@ const GameOver: FC = () => {
   const [rematchRequested, setRematchRequested] = useState(false);
   const [waitingForResponse, setWaitingForResponse] = useState(false);
   
-  // Dialog hook
   const { dialogState, showAlert, handleConfirm, handleCancel } = useDialog();
 
   useEffect(() => {
@@ -42,7 +37,6 @@ const GameOver: FC = () => {
       return;
     }
 
-    // Get username from result (passed from MultiplayerGame)
     const username = result.playerName;
     if (!username) {
       navigate('/');
@@ -58,7 +52,6 @@ const GameOver: FC = () => {
 
     socketRef.current = socket;
 
-    // Wait for connection before joining game-over room
     socket.on('connect', () => {
       socket.emit('joinGameOverRoom', { username });
     });
@@ -109,7 +102,7 @@ const GameOver: FC = () => {
 
   const handleAcceptRematch = () => {
     if (socketRef.current) {
-      socketRef.current.emit('rematchResponse', { accepted: true });
+      socketRef.current.emit('rematchResponse', { accepted: true })
     }
   };
 
@@ -133,11 +126,6 @@ const GameOver: FC = () => {
     navigate('/my-wins');
   };
 
-  const handleNewStakedMatch = () => {
-    navigate('/');
-    // Could add a state parameter to pre-select staked match mode
-  };
-
   const isStaked = result.isStaked || false;
   const isWinner = result.isWinner || false;
 
@@ -150,7 +138,7 @@ const GameOver: FC = () => {
         <p>Game Duration: {Math.round((result.stats.duration || 0) / 1000)}s</p>
         <p>Total Hits: {result.stats.hits || 0}</p>
         {isStaked && result.stakeAmount && (
-          <p className="prize-info">Prize: {result.stakeAmount} PC 💰</p>
+          <p className="prize-info">Prize: {result.stakeAmount} HBAR 💰</p>
         )}
       </div>
 

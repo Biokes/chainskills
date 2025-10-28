@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect, useCallback, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePushWalletContext, PushUniversalAccountButton, usePushChainClient } from '@pushchain/ui-kit';
 import io, { Socket } from 'socket.io-client';
 import '../styles/Welcome.css';
 import { BACKEND_URL, STAKE_AMOUNTS } from '../constants';
@@ -10,13 +9,15 @@ import { parseTransactionError } from '../utils/errorParser';
 import { useDialog } from '../hooks/useDialog';
 import Dialog from './Dialog';
 import { type Player as AuthPlayer } from '../services/authService';
+import { useAccount } from 'wagmi';
+import { toast } from 'sonner';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 
 interface WelcomeProps {
   setGameState: (state: any) => void
   savedUsername: string | null
   onUsernameSet: (username: string, walletAddress?: string) => void
   authenticatedPlayer: AuthPlayer | null
-  isAuthenticating: boolean
   walletAddress: string | null
 }
 
@@ -34,7 +35,7 @@ interface ActiveGame {
   spectatorCount: number
 }
 
-const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet, authenticatedPlayer, isAuthenticating, walletAddress }) => {
+const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet, authenticatedPlayer, walletAddress }) => {
   const [rankings, setRankings] = useState<Ranking[]>([]);
   const [activeGames, setActiveGames] = useState<ActiveGame[]>([]);
   const [showTitle, setShowTitle] = useState(false);
@@ -47,20 +48,13 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
   const titleRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const socketRef = useRef<Socket | null>(null);
+  const {openConnectModal} = useConnectModal()
+  const {isConnected, address } = useAccount()
+  const isWalletReady = isConnected && !!address;
 
-  // Push Chain wallet context
-  const { connectionStatus } = usePushWalletContext();
-  const { pushChainClient } = usePushChainClient();
-  const isConnected = connectionStatus === 'connected';
-  const isWalletReady = isConnected && !!pushChainClient?.universal?.account;
-  
-  // Get the user's account address from Push Chain client
-  const address = pushChainClient?.universal?.account?.toLowerCase() || null;
 
-  // Dialog hook
   const { dialogState, showAlert, handleConfirm, handleCancel } = useDialog();
 
-  // Push Chain staking hook
   const {
     stakeAsPlayer1,
     hash: stakingTxHash,
@@ -70,7 +64,6 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     error: stakingError
   } = useStakeAsPlayer1();
 
-  // Fetch unclaimed stakes count when wallet is connected
   useEffect(() => {
     const fetchUnclaimedStakesCount = async () => {
       if (!address || !isConnected) {
@@ -95,7 +88,6 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     };
 
     fetchUnclaimedStakesCount();
-    // Refresh count every 30 seconds
     const interval = setInterval(fetchUnclaimedStakesCount, 30000);
     return () => clearInterval(interval);
   }, [address, isConnected]);
@@ -110,11 +102,11 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
             'Content-Type': 'application/json',
           }
         });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        
+
         const data = await response.json();
         setRankings(data);
       } catch (error) {
@@ -153,7 +145,6 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     };
   }, []);
 
-  // Add handler to start audio after user interaction
   const handleStartAudio = useCallback(() => {
     if (!audioStarted) {
       setShowTitle(true);
@@ -165,7 +156,6 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     }
   }, [audioStarted]);
 
-  // Add effect for title animation and sound
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowTitle(true);
@@ -183,12 +173,10 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     };
   }, [audioStarted, handleStartAudio]);
 
-  // Handle successful staking transaction
   useEffect(() => {
 
     if (isStakingSuccess && pendingRoomCode && stakingTxHash) {
 
-      // Notify backend about the staked match
       fetch(`${BACKEND_URL}/games`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -234,7 +222,6 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     }
   }, [isStakingSuccess, pendingRoomCode, stakingTxHash, selectedStakeAmount, savedUsername, address, navigate, setGameState]);
 
-  // Handle staking errors
   useEffect(() => {
     if (stakingError) {
       const parsedError = parseTransactionError(stakingError);
@@ -244,33 +231,54 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
   }, [stakingError]);
 
   const promptUsername = (callback: (username: string) => void) => {
-    // If user is authenticated, use their player data
     if (authenticatedPlayer) {
       callback(authenticatedPlayer.name);
       return;
     }
 
-    // If not authenticated but wallet is connected, prompt for username
     if (!walletAddress) {
-      showAlert('Please connect your wallet first.', 'Wallet Required');
+      toast.info("Please conect your wallet", {
+        description: 'Please connect your wallet first.',
+        action: {
+          label: 'connect wallet',
+          onClick: () => { 
+            openConnectModal?.()
+          }
+        }
+      });
       return;
     }
-
     const modal = document.createElement('dialog');
-    modal.innerHTML = `
-      <form method="dialog">
-        <h2>Welcome! Create Your Profile</h2>
-        <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 1rem;">
-          This is your first time connecting this wallet.<br/>
-          Choose a unique username to get started.
-        </p>
-        <input type="text" id="username" value="" required minlength="2" maxlength="15" placeholder="Your unique username" autocomplete="off">
-        <p id="error-message" style="color: #ff4444; font-size: 0.85rem; margin-top: 0.5rem; display: none;"></p>
-        <div class="buttons">
-          <button type="submit" id="submit-btn">Create Profile</button>
-        </div>
-      </form>
+    modal.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      padding: 2rem;
+      background: rgba(20, 20, 30, 0.95);
+      color: white;
+      max-width: 90vw;
+      width: 400px;
+      z-index: 9999;
     `;
+
+    modal.innerHTML = `
+  <form method="dialog">
+    <h2>Welcome! Create Your Profile</h2>
+    <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 1rem;">
+      This is your first time connecting this wallet.<br/>
+      Choose a unique username to get started.
+    </p>
+    <input type="text" id="username" value="" required minlength="2" maxlength="15" placeholder="Your unique username" autocomplete="off">
+    <p id="error-message" style="color: #ff4444; font-size: 0.85rem; margin-top: 0.5rem; display: none;"></p>
+    <div class="buttons">
+      <button type="submit" id="submit-btn">Create Profile</button>
+    </div>
+  </form>
+`;
 
     document.body.appendChild(modal);
     modal.showModal();
@@ -279,7 +287,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     const input = document.getElementById('username') as HTMLInputElement;
     const errorMsg = document.getElementById('error-message') as HTMLElement;
     const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
-    
+
     if (input) {
       input.value = '';
       input.focus();
@@ -290,7 +298,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
       form.onsubmit = async (e) => {
         e.preventDefault();
         const username = input.value.trim();
-        
+
         if (!username || !walletAddress) return;
 
         // Disable submit button during request
@@ -314,7 +322,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
             errorMsg.textContent = 'Failed to create profile. Please try again.';
             errorMsg.style.display = 'block';
           }
-          
+
           // Re-enable submit button
           submitBtn.disabled = false;
           submitBtn.textContent = 'Create Profile';
@@ -331,9 +339,9 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     promptUsername((username) => {
       setGameState((prev: any) => ({
         ...prev,
-        player1: { 
-          name: username, 
-          rating: authenticatedPlayer?.rating || 1000 
+        player1: {
+          name: username,
+          rating: authenticatedPlayer?.rating || 1000
         },
         gameMode: 'quick'
       }));
@@ -349,9 +357,9 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     promptUsername((username) => {
       setGameState((prev: any) => ({
         ...prev,
-        player1: { 
-          name: username, 
-          rating: authenticatedPlayer?.rating || 1000 
+        player1: {
+          name: username,
+          rating: authenticatedPlayer?.rating || 1000
         },
         gameMode: 'create'
       }));
@@ -403,9 +411,9 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
           const roomCode = input.value.toUpperCase();
           setGameState((prev: any) => ({
             ...prev,
-            player1: { 
-              name: username, 
-              rating: authenticatedPlayer?.rating || 1000 
+            player1: {
+              name: username,
+              rating: authenticatedPlayer?.rating || 1000
             },
             gameMode: 'join',
             roomCode
@@ -757,7 +765,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
           <p>Use UP/DOWN arrow keys to move your paddle</p>
           <p>First to 10 points wins!</p>
         </section>
-        
+
         <section className="rankings surface-panel">
           <h2>Top Players</h2>
           <div className="rankings-list">

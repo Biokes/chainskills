@@ -11,7 +11,6 @@ import PowerUpDashboard from './components/PowerUps/PowerUpDashboard'
 import SpeakerIcon from './components/SpeakerIcon'
 import './styles/App.css'
 import { authenticatePlayer, type Player as AuthPlayer } from './services/authService'
-import { AppProvider } from './providers/PushChainProviders'
 import { useAccount } from 'wagmi';
 
 interface Player {
@@ -47,7 +46,7 @@ function App() {
         return
       }
 
-      setIsAuthenticating(true)
+      setIsAuthenticating(!isAuthenticating)
 
       try {
         const result = await authenticatePlayer(address)
@@ -64,7 +63,7 @@ function App() {
           setUsername(null)
         }
       } finally {
-        setIsAuthenticating(false)
+        setIsAuthenticating(!isAuthenticating)
       }
     }
 
@@ -103,73 +102,71 @@ function App() {
   }
 
   return (
-    <AppProvider>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<Welcome
+    <div className="App">
+      <Routes>
+        <Route path="/"
+          element={<Welcome
             setGameState={setGameState}
             savedUsername={username}
             onUsernameSet={handleUsernameSet}
             authenticatedPlayer={authenticatedPlayer}
-            isAuthenticating={isAuthenticating}
-            walletAddress={walletAddress}
+            walletAddress={address as string}
           />
           }
-          />
-          <Route
-            path="/game"
-            element={
-              <MultiplayerGame
-                username={username}
-                walletAddress={walletAddress}
-                authenticatedPlayer={authenticatedPlayer}
-              />
-            }
-          />
-          <Route
-            path="/spectate"
-            element={<SpectatorView />}
-          />
-          <Route
-            path="/game-over"
-            element={
-              <GameOver
-                savedUsername={username}
-                walletAddress={walletAddress}
-                authenticatedPlayer={authenticatedPlayer}
-                onPlayAgain={() => {
-                  setGameState(prev => ({
-                    ...prev,
-                    player1: {
-                      name: username || 'Guest',
-                      rating: authenticatedPlayer?.rating || 800
-                    }
-                  }))
-                }}
-              />
-            }
-          />
-          <Route
-            path="/my-wins"
-            element={<MyWins />}
-          />
-          <Route
-            path="/game-history"
-            element={<GameHistory savedUsername={username} walletAddress={walletAddress} />}
-          />
-          <Route
-            path="/unclaimed-stakes"
-            element={<UnclaimedStakes />}
-          />
-          <Route
-            path="/powerups"
-            element={<PowerUpDashboard walletAddress={walletAddress} />}
-          />
-        </Routes>
+        />
+        <Route
+          path="/game"
+          element={
+            <MultiplayerGame
+              username={username}
+              walletAddress={address as string}
+              authenticatedPlayer={authenticatedPlayer}
+            />
+          }
+        />
+        <Route
+          path="/spectate"
+          element={<SpectatorView />}
+        />
+        <Route
+          path="/game-over"
+          element={
+            <GameOver
+            // savedUsername={username}
+            // walletAddress={address}
+            // authenticatedPlayer={authenticatedPlayer}
+            // onPlayAgain={() => {
+            //   setGameState(prev => ({
+            //     ...prev,
+            //     player1: {
+            //       name: username || 'Guest',
+            //       rating: authenticatedPlayer?.rating || 800
+            //     }
+            //   }))
+            // }}
+            />
+          }
+        />
+        <Route
+          path="/my-wins"
+          element={<MyWins />}
+        />
+        <Route
+          path="/game-history"
+          element={<GameHistory savedUsername={username} />}
+        />
+        <Route
+          path="/unclaimed-stakes"
+          element={<UnclaimedStakes />}
+        />
+        <Route
+          path="/powerups"
+          element={<PowerUpDashboard walletAddress={address as string} />}
+        />
+      </Routes>
 
-        <SpeakerIcon />
-      </div>
-    </AppProvider>
+      <SpeakerIcon />
+    </div>
   )
 }
 

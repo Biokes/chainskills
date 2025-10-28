@@ -1,6 +1,3 @@
-// Game constants
-// NOTE: STORAGE_KEY is DEPRECATED - Username is fetched from database via wallet address
-// Kept for backwards compatibility only, not used for authentication
 export const STORAGE_KEY = 'pong_username'
 
 // Game settings
@@ -8,16 +5,13 @@ export const INITIAL_BALL_SPEED = 31
 export const PADDLE_SPEED = 0.01
 export const INITIAL_RATING = 1000
 
-// Backend connection
 export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
 
-// Contract address
 export const PONG_ESCROW_ADDRESS = import.meta.env.VITE_PONG_ESCROW_ADDRESS as `0x${string}`
 export const PONG_POWERUPS_ADDRESS = import.meta.env.VITE_PONG_POWERUPS_ADDRESS as `0x${string}`
 
-// Validate that contract address is set
-if (!PONG_ESCROW_ADDRESS || PONG_ESCROW_ADDRESS === 'undefined') {
-}
+// if (!PONG_ESCROW_ADDRESS || PONG_ESCROW_ADDRESS === 'undefined') {
+// }
 
 export const POWER_UP_METADATA = {
   1: {
@@ -45,15 +39,13 @@ export const POWER_UP_METADATA = {
 
 export const POWER_UP_IDS = Object.keys(POWER_UP_METADATA).map(Number)
 
-// Preset stake amounts (in PC/ETH)
 export const STAKE_AMOUNTS = [
-  { value: '0.001', label: '0.001 PC' },
-  { value: '0.005', label: '0.005 PC' },
-  { value: '0.01', label: '0.01 PC' },
-  { value: '0.05', label: '0.05 PC' },
+  { value: '0.1', label: '0.1 HBAR' },
+  { value: '0.5', label: '0.5 HBAR' },
+  { value: '1', label: '1 HBAR' },
+  { value: '5', label: '5 HBAR' },
 ]
 
-// Match status enum (must match contract)
 export const MatchStatus = {
   NOT_CREATED: 0,
   PLAYER1_STAKED: 1,
@@ -62,7 +54,7 @@ export const MatchStatus = {
   REFUNDED: 4,
 } as const
 
-// Chain configuration
+
 export const PUSH_CHAIN_TESTNET = {
   id: 42101,
   name: 'Push Chain Testnet',

@@ -4,7 +4,7 @@ export const INITIAL_BALL_SPEED = 31
 export const PADDLE_SPEED = 0.01
 export const INITIAL_RATING = 1000
 
-export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080'
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 export const PONG_ESCROW_ADDRESS = import.meta.env.VITE_PONG_ESCROW_ADDRESS as `0x${string}`
 export const PONG_POWERUPS_ADDRESS = import.meta.env.VITE_PONG_POWERUPS_ADDRESS as `0x${string}`

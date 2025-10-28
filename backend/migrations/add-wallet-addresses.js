@@ -1,22 +1,6 @@
-/**
- * Migration Script: Add Wallet Addresses to Existing Players
- * 
- * This script updates existing players in the database to include
- * the new walletAddress field required by the updated schema.
- * 
- * Usage:
- *   node migrations/add-wallet-addresses.js
- * 
- * What it does:
- * 1. Finds all players without a walletAddress
- * 2. Assigns them a legacy wallet address: legacy_<name>_<timestamp>
- * 3. Ensures all players have the required walletAddress field
- */
-
 const mongoose = require('mongoose');
 const Player = require('../src/models/Player');
 
-// MongoDB connection string
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pong-game';
 
 async function migrateWalletAddresses() {
@@ -25,7 +9,6 @@ async function migrateWalletAddresses() {
     await mongoose.connect(MONGODB_URI);
     console.log('✅ Connected to MongoDB');
 
-    // Find all players without walletAddress
     const playersWithoutWallet = await Player.find({ 
       $or: [
         { walletAddress: { $exists: false } },
@@ -49,7 +32,6 @@ async function migrateWalletAddresses() {
 
     for (const player of playersWithoutWallet) {
       try {
-        // Generate legacy wallet address
         const legacyAddress = `legacy_${player.name}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
         player.walletAddress = legacyAddress;
@@ -58,7 +40,6 @@ async function migrateWalletAddresses() {
         console.log(`✅ Migrated: ${player.name} → ${legacyAddress}`);
         migrated++;
         
-        // Small delay to ensure unique timestamps
         await new Promise(resolve => setTimeout(resolve, 10));
       } catch (error) {
         console.error(`❌ Failed to migrate ${player.name}:`, error.message);
@@ -73,7 +54,6 @@ async function migrateWalletAddresses() {
     console.log(`   ❌ Failed:       ${failed}`);
     console.log('='.repeat(60) + '\n');
 
-    // Verify migration
     const remainingWithoutWallet = await Player.countDocuments({
       $or: [
         { walletAddress: { $exists: false } },
@@ -99,6 +79,5 @@ async function migrateWalletAddresses() {
   }
 }
 
-// Run migration
 migrateWalletAddresses();
 

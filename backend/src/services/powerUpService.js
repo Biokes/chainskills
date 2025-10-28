@@ -10,19 +10,12 @@ const BOOST_ID_MAP = {
   shield: 2,
   multiball: 3,
 };
-const DEFAULT_RPC_URL = 'https://evm.rpc-testnet-donut-node1.push.org';
-
 let powerUpArtifact = null;
 
 try {
-  // Try to load from frontend contracts first (production path)
   try {
-    powerUpArtifact = require(
-      './json/PongPowerUps.json'
-    );
-    console.log("PowerUpArtifact", powerUpArtifact)
+    powerUpArtifact = require( './json/PongPowerUps.json');
   } catch (frontendError) {
-    // Fallback to hardhat artifacts (development path)
     console.log("Inside the fallback for some reason")
     powerUpArtifact = require(
       path.join(
@@ -53,10 +46,9 @@ class PowerUpService {
     }
     this.initialized = true;
 
-    const contractAddress = process.env.PONG_POWERUPS_ADDRESS || process.env.POWERUP_CONTRACT_ADDRESS;
-    const privateKey =
-      process.env.POWERUP_SIGNER_PRIVATE_KEY || process.env.SIGNING_WALLET_PRIVATE_KEY;
-    const rpcUrl = process.env.POWERUP_RPC_URL || DEFAULT_RPC_URL;
+    const contractAddress = process.env.PONG_POWERUPS_ADDRESS;
+    const privateKey = process.env.SIGNING_WALLET_PRIVATE_KEY;
+    const rpcUrl = process.env.POWERUP_RPC_URL;
 
     if (!contractAddress || contractAddress === ethers.ZeroAddress) {
       console.warn('⚠️  POWERUP_CONTRACT_ADDRESS not configured. Power-up flow disabled.');
@@ -152,12 +144,10 @@ class PowerUpService {
       const now = new Date();
       state.lastWinAt = now;
 
-      // Mint baseline boost reward (speed boost by default)
       const contextHash = ethers.id(`WIN:${roomCode}:${now.toISOString()}`);
       const tx = await this.contract.mintBoost(normalized, BOOST_IDS[0], 1, contextHash);
       await tx.wait(1);
 
-      // Award daily crate if eligible (once per UTC day)
       const startOfDay = this.getStartOfDay(now);
       const alreadyAwardedToday =
         state.lastCrateAwardedAt && state.lastCrateAwardedAt >= startOfDay;

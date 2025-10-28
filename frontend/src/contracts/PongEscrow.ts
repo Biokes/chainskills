@@ -6,7 +6,6 @@
  */
 
 export const PONG_ESCROW_ABI = [
-  // ============ View Functions ============
   {
     inputs: [{ internalType: 'string', name: 'roomCode', type: 'string' }],
     name: 'getMatch',
@@ -171,7 +170,6 @@ export const PONG_ESCROW_ABI = [
   },
 ] as const
 
-// TypeScript types for better type safety
 export interface Match {
   player1: `0x${string}`
   player2: `0x${string}`

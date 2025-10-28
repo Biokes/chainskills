@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
-import { usePushChainClient, usePushChain } from '@pushchain/ui-kit'
 import { PONG_POWERUPS_ABI } from '../contracts/PongPowerUps'
-import { PONG_POWERUPS_ADDRESS } from '../constants'
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
 interface TransactionState {
   hash: string | null
@@ -23,21 +22,89 @@ const initialState: TransactionState = {
   error: null,
 }
 
-function usePowerUpTransaction<TArgs extends unknown[]>(
-  functionName: string,
-  argsFormatter: (...args: TArgs) => unknown[]
-): UsePowerUpResult<TArgs> {
-  const { pushChainClient } = usePushChainClient()
-  const { PushChain } = usePushChain()
+// function usePowerUpTransaction<TArgs extends unknown[]>(
+//   functionName: string,
+//   argsFormatter: (...args: TArgs) => unknown[]
+// ): UsePowerUpResult<TArgs> {
+//   const { pushChainClient } = usePushChainClient()
+//   const { PushChain } = usePushChain()
 
-  const [state, setState] = useState<TransactionState>(initialState)
+//   const [state, setState] = useState<TransactionState>(initialState)
+
+//   const execute = useCallback(
+//     async (...args: TArgs) => {
+//             try {
+//         setState(prev => ({
+//           ...prev,
+//           isPending: true,
+//           error: null,
+//           isSuccess: false,
+//           hash: null,
+//         }))
+
+//         const formattedArgs = argsFormatter(...args)
+
+//         const data = PushChain.utils.helpers.encodeTxData({
+//           abi: PONG_POWERUPS_ABI,
+//           functionName,
+//           args: formattedArgs,
+//         })
+
+//         const txResponse = await pushChainClient.universal.sendTransaction({
+//           to: PONG_POWERUPS_ADDRESS,
+//           data,
+//         })
+
+//         setState(prev => ({
+//           ...prev,
+//           hash: txResponse.hash,
+//           isPending: false,
+//           isConfirming: true,
+//         }))
+
+//         await txResponse.wait(1)
+
+//         setState(prev => ({
+//           ...prev,
+//           isConfirming: false,
+//           isSuccess: true,
+//         }))
+//         return txResponse.hash
+//       } catch (error) {
+//         setState({
+//           hash: null,
+//           isPending: false,
+//           isConfirming: false,
+//           isSuccess: false,
+//           error: error as Error,
+//         })
+//         throw error
+//       }
+//     },
+//     [PushChain, pushChainClient, functionName, argsFormatter]
+//   )
+
+//   return {
+//     execute,
+//     hash: state.hash,
+//     isPending: state.isPending,
+//     isConfirming: state.isConfirming,
+//     isSuccess: state.isSuccess,
+//     error: state.error,
+//   }
+// }
+
+function usePowerUpTransaction<TArgs extends unknown[]>(functionName: string, argsFormatter: (...args: TArgs) => unknown[]): UsePowerUpResult<TArgs> {
+  const { writeContractAsync } = useWriteContract();
+  const [hash, setHash] = useState<string | null>(null);
+  const [state, setState] = useState<TransactionState>(initialState);
+
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+    hash: hash as `0x${string}` | undefined,
+  });
 
   const execute = useCallback(
     async (...args: TArgs) => {
-      if (!pushChainClient || !PushChain) {
-        throw new Error('Push Chain client not initialized')
-      }
-
       try {
         setState(prev => ({
           ...prev,
@@ -45,36 +112,26 @@ function usePowerUpTransaction<TArgs extends unknown[]>(
           error: null,
           isSuccess: false,
           hash: null,
-        }))
+        }));
 
-        const formattedArgs = argsFormatter(...args)
+        const formattedArgs = argsFormatter(...args);
 
-        const data = PushChain.utils.helpers.encodeTxData({
+        const txHash = await writeContractAsync({
+          address: import.meta.env.VITE_PONG_POWERUPS_ADDRESS as `0x${string}`,
           abi: PONG_POWERUPS_ABI,
           functionName,
           args: formattedArgs,
-        })
+        });
 
-        const txResponse = await pushChainClient.universal.sendTransaction({
-          to: PONG_POWERUPS_ADDRESS,
-          data,
-        })
-
+        setHash(txHash);
         setState(prev => ({
           ...prev,
-          hash: txResponse.hash,
+          hash: txHash,
           isPending: false,
           isConfirming: true,
-        }))
+        }));
 
-        await txResponse.wait(1)
-
-        setState(prev => ({
-          ...prev,
-          isConfirming: false,
-          isSuccess: true,
-        }))
-        return txResponse.hash
+        return txHash;
       } catch (error) {
         setState({
           hash: null,
@@ -82,21 +139,21 @@ function usePowerUpTransaction<TArgs extends unknown[]>(
           isConfirming: false,
           isSuccess: false,
           error: error as Error,
-        })
-        throw error
+        });
+        throw error;
       }
     },
-    [PushChain, pushChainClient, functionName, argsFormatter]
-  )
+    [writeContractAsync, functionName, argsFormatter]
+  );
 
   return {
     execute,
     hash: state.hash,
     isPending: state.isPending,
-    isConfirming: state.isConfirming,
-    isSuccess: state.isSuccess,
+    isConfirming,
+    isSuccess,
     error: state.error,
-  }
+  };
 }
 
 export function useOpenDailyCrate() {

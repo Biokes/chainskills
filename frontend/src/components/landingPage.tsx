@@ -17,7 +17,6 @@ export default function LandingPage() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/20 to-background" />
                 </div>
-
                 <div className="relative z-10 text-center space-y-8 px-4 max-w-5xl mx-auto -my-4">
                     <motion.div
                         animate={{ scale: [1, 1.05, 1], rotate: [0, 1, -1, 0] }}
@@ -41,7 +40,7 @@ export default function LandingPage() {
                         transition={{ duration: 0.8, delay: 0.3 }}
                     >
                         <Button
-                            onClick={() => navigate('/hub')}
+                            onClick={() => navigate('/pong')}
                             className="animate-pulse ribeye hover:scale-[1.07] transition transform-all"
                         >
                             Take me to the Hub

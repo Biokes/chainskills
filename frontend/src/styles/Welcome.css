@@ -299,11 +299,11 @@ html, body {
   }
 
   .game-modes {
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
   .mode-button {
-    padding: 1rem 0.5rem;
+    padding: 0.75rem 0.35rem;
     font-size: 0.8rem;
   }
 
@@ -410,10 +410,10 @@ body .welcome,
 
 .game-modes {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1rem;
   width: 100%;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .mode-button {
@@ -432,7 +432,7 @@ body .welcome,
 }
 
 .button-text {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
 }
 
 .active-games {
@@ -448,7 +448,7 @@ body .welcome,
 .active-games h2 {
   color: #DA76EC;
   margin-bottom: 1rem;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .games-list {
@@ -879,7 +879,7 @@ dialog.stake-modal h2 {
 
 .App .welcome .welcome__actions .game-modes {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: var(--content-gap);
 }
 
@@ -887,7 +887,7 @@ dialog.stake-modal h2 {
   display: grid;
   place-items: center;
   gap: 0.65rem;
-  padding: clamp(1.3rem, 2.6vw, 2.3rem) clamp(0.9rem, 1.8vw, 1.7rem);
+  padding: clamp(1rem, 2vw, 1.7rem) clamp(0.9rem, 1.8vw, 1.7rem);
   font-size: var(--text-size-sm);
   letter-spacing: 0.08em;
   background: linear-gradient(135deg, rgba(218, 118, 236, 0.25) 0%, rgba(247, 61, 255, 0.35) 100%);
@@ -924,7 +924,7 @@ dialog.stake-modal h2 {
 }
 
 .App .welcome .surface-panel h2 {
-  font-size: clamp(1.35rem, 2vw, 1.9rem);
+  font-size: clamp(1.35rem, 2vw, 1.3rem);
   color: var(--color-primary);
   margin-bottom: 1.5rem;
   text-transform: uppercase;
@@ -1040,6 +1040,6 @@ dialog.stake-modal h2 {
   }
 
   .App .welcome .welcome__actions .game-modes {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
 }

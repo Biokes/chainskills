@@ -606,7 +606,7 @@ body .endgame-container > *,
   top: 0 !important;
   left: 0 !important;
   overflow-y: auto !important;
-  background-color: #000 !important;
+  /* background-color: #000 !important; */
 }
 
 /* Target the logo in the welcome page */

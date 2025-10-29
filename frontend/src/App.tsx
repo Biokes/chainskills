@@ -165,7 +165,7 @@ function App() {
           path="/powerups"
           element={<PowerUpDashboard walletAddress={address as string} />}
         />
-        <Route path="/hub" element={<Hub/>} />
+        {/* <Route path="/hub" element={<Hub/>} /> */}
       </Routes>
       {location.pathname !== '/' && location.pathname !=="/hub" && <SpeakerIcon />}
     </div>

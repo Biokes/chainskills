@@ -12,7 +12,6 @@ import { type Player as AuthPlayer } from '../services/authService';
 import { useAccount } from 'wagmi';
 import { toast } from 'sonner';
 import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit';
-import { cn } from '@/lib/utils';
 
 interface WelcomeProps {
   setGameState: (state: any) => void
@@ -330,7 +329,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
 
   const handleStartGame = () => {
     if (!isWalletReady) {
-      showAlert('Please connect your wallet to start a match.', 'Wallet Not Connected');
+      toast.error('Please connect your wallet to start a match.', {duration:2000});
       return;
     }
     promptUsername((username) => {

@@ -43,7 +43,7 @@ export default function LandingPage() {
                             onClick={() => navigate('/pong')}
                             className="animate-pulse ribeye hover:scale-[1.07] transition transform-all"
                         >
-                            Take me to the Hub
+                            Take me to the Game
                             <ArrowRight className="ml-2 h-5 w-7" />
                         </Button>
                     </motion.div>

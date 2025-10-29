@@ -12,6 +12,7 @@ import { type Player as AuthPlayer } from '../services/authService';
 import { useAccount } from 'wagmi';
 import { toast } from 'sonner';
 import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit';
+import { cn } from '@/lib/utils';
 
 interface WelcomeProps {
   setGameState: (state: any) => void
@@ -616,7 +617,9 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
       </div>
       <div className="welcome page-shell">
         <div className="welcome__top surface-panel surface-panel--compact">
-          <div className="welcome__wallet">
+          <div className="w-full flex justify-between items-center">
+            <p className={"hover:bg-[#DA76EC] cursor-pointer border[#DA76EC]/70 bg-[#4C1F5E] transition transform-all rounded duration-300 px-[20px] py-[10px]"}
+              onClick={()=> navigate('/')}> ← Back</p>
             <ConnectButton />
           </div>
           <div className="welcome__links">
@@ -809,3 +812,4 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
 };
 
 export default Welcome;
+ 

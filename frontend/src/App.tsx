@@ -13,6 +13,7 @@ import './styles/App.css'
 import { authenticatePlayer, type Player as AuthPlayer } from './services/authService'
 import { useAccount } from 'wagmi';
 import LandingPage from './components/landingPage'
+import Hub from './components/hub'
 
 interface Player {
   name: string
@@ -164,8 +165,9 @@ function App() {
           path="/powerups"
           element={<PowerUpDashboard walletAddress={address as string} />}
         />
+        <Route path="/hub" element={<Hub/>} />
       </Routes>
-      {location.pathname !== '/' && <SpeakerIcon />}
+      {location.pathname !== '/' && location.pathname !=="/hub" && <SpeakerIcon />}
     </div>
   )
 }

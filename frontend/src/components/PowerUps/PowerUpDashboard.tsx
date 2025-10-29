@@ -538,7 +538,7 @@ const PowerUpDashboard: FC<PowerUpDashboardProps> = ({ walletAddress }) => {
     return (
       <div className="powerup-page">
         <header className="powerup-header">
-          <button type="button" onClick={() => navigate("/")}>
+          <button type="button" onClick={() => navigate("/pong")}>
             ← Back
           </button>
           <h2>PONG-IT Power-Ups</h2>
@@ -552,7 +552,7 @@ const PowerUpDashboard: FC<PowerUpDashboardProps> = ({ walletAddress }) => {
     return (
       <div className="powerup-page">
         <header className="powerup-header">
-          <button type="button" onClick={() => navigate("/")}>
+          <button type="button" onClick={() => navigate("/pong")}>
             ← Back
           </button>
           <h2>PONG-IT Power-Ups</h2>
@@ -567,7 +567,7 @@ const PowerUpDashboard: FC<PowerUpDashboardProps> = ({ walletAddress }) => {
   return (
     <div className="powerup-page">
       <header className="powerup-header">
-        <button type="button" onClick={() => navigate("/")}>
+        <button type="button" onClick={() => navigate("/pong")}>
           ← Back
         </button>
         <div>

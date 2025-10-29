@@ -130,7 +130,7 @@ const UnclaimedStakes: FC = () => {
       <AddressDisplay />
       <div className="unclaimed-stakes-content">
         <div className="header">
-          <button onClick={() => navigate("/")} className="btn-back">
+          <button onClick={() => navigate("/pong")} className="btn-back">
             ← Back
           </button>
           <div className="" style={{display : "flex", gap: "16px", alignItems : "center"}}>

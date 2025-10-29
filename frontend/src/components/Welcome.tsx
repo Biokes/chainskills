@@ -426,169 +426,346 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
     });
   };
 
-  const handleCreateStakedMatch = () => {
-    if (!isWalletReady) {
-      showAlert('Please connect your wallet to create a staked match', 'Wallet Not Connected');
-      return;
-    }
-    promptUsername(() => {
-      const modal = document.createElement('dialog');
-      modal.className = 'stake-modal';
-      modal.innerHTML = `
-        <form method="dialog">
-          <h2>Select Stake Amount</h2>
-          <p style="margin-bottom: 20px; color: #888;">Choose how much PC (Push Chain tokens) you want to stake</p>
-          <div class="stake-options">
-            ${STAKE_AMOUNTS.map(({ value, label }) => `
-              <button type="button" class="stake-option" data-amount="${value}">
-                ${label.replace('ETH', 'PC')}
-              </button>
-            `).join('')}
-          </div>
-          <div style="margin: 20px 0; padding: 15px; background: rgba(116,113,203,0.1); border-radius: 8px;">
-            <label style="display: block; margin-bottom: 10px; color: #888; font-size: 0.9rem;">
-              Or enter custom amount (min 0.001 PC):
-            </label>
-            <input
-              type="number"
-              id="custom-stake-input"
-              placeholder="0.001"
-              step="0.001"
-              min="0.001"
-              style="
-                width: 100%;
-                padding: 10px;
-                background: #1a1a1a;
-                border: 1px solid rgb(116,113,203);
-                border-radius: 5px;
-                color: #fff;
-                font-size: 1rem;
-              "
-            />
-            <div id="custom-amount-error" style="
-              display: none;
-              margin-top: 8px;
-              padding: 8px;
-              background: rgba(255, 107, 107, 0.1);
-              border: 1px solid #ff6b6b;
-              border-radius: 5px;
-              color: #ff6b6b;
-              font-size: 0.75rem;
-            "></div>
-            <button
-              type="button"
-              id="use-custom-amount-btn"
-              style="
-                width: 100%;
-                margin-top: 10px;
-                padding: 10px;
-                background: rgb(116,113,203);
-                color: #000;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                fontFamily: 'Press Start 2P', monospace;
-                font-size: 0.8rem;
-              "
-            >
-              Use Custom Amount
+  // const handleCreateStakedMatch = () => {
+  //   if (!isWalletReady) {
+  //     toast.info('Please connect your wallet to create a staked match');
+  //     return;
+  //   }
+  //   promptUsername(() => {
+  //     const modal = document.createElement('dialog');
+  //     modal.className = 'stake-modal';
+  //     modal.innerHTML = `
+  //       <form method="dialog">
+  //         <h2>Select Stake Amount</h2>
+  //         <p style="margin-bottom: 20px; color: #888;">Choose how much HBAR (Hedera Tkens) you want to stake</p>
+  //         <div class="stake-options">
+  //           ${STAKE_AMOUNTS.map(({ value, label }) => `
+  //             <button type="button" class="stake-option" data-amount="${value}">
+  //               ${label.replace('ETH', 'HBAR')}
+  //             </button>
+  //           `).join('')}
+  //         </div>
+  //         <div style="margin: 20px 0; padding: 15px; background: rgba(116,113,203,0.1); border-radius: 8px;">
+  //           <label style="display: block; margin-bottom: 10px; color: #888; font-size: 0.9rem;">
+  //             Or enter custom amount (min 0.1 HBAR):
+  //           </label>
+  //           <input
+  //             type="number"
+  //             id="custom-stake-input"
+  //             placeholder="0.001"
+  //             step="0.001"
+  //             min="0.001"
+  //             style="
+  //               width: 100%;
+  //               padding: 10px;
+  //               background: #1a1a1a;
+  //               border: 1px solid rgb(116,113,203);
+  //               border-radius: 5px;
+  //               color: #fff;
+  //               font-size: 1rem;
+  //             "
+  //           />
+  //           <div id="custom-amount-error" style="
+  //             display: none;
+  //             margin-top: 8px;
+  //             padding: 8px;
+  //             background: rgba(255, 107, 107, 0.1);
+  //             border: 1px solid #ff6b6b;
+  //             border-radius: 5px;
+  //             color: #ff6b6b;
+  //             font-size: 0.75rem;
+  //           "></div>
+  //           <button
+  //             type="button"
+  //             id="use-custom-amount-btn"
+  //             style="
+  //               width: 100%;
+  //               margin-top: 10px;
+  //               padding: 10px;
+  //               background: rgb(116,113,203);
+  //               color: #000;
+  //               border: none;
+  //               border-radius: 5px;
+  //               cursor: pointer;
+  //               fontFamily: 'Press Start 2P', monospace;
+  //               font-size: 0.8rem;
+  //             "
+  //           >
+  //             Use Custom Amount
+  //           </button>
+  //         </div>
+  //         <div class="buttons" style="margin-top: 20px;">
+  //           <button type="button" id="cancel-stake-btn">Cancel</button>
+  //         </div>
+  //       </form>
+  //     `;
+
+  //     document.body.appendChild(modal);
+  //     modal.showModal();
+
+  //     const cancelStakeBtn = modal.querySelector('#cancel-stake-btn') as HTMLButtonElement;
+  //     if (cancelStakeBtn) {
+  //       cancelStakeBtn.onclick = () => {
+  //         modal.close();
+  //         modal.remove();
+  //       };
+  //     }
+
+  //     const customInput = modal.querySelector('#custom-stake-input') as HTMLInputElement;
+  //     const useCustomBtn = modal.querySelector('#use-custom-amount-btn') as HTMLButtonElement;
+  //     const errorDiv = modal.querySelector('#custom-amount-error') as HTMLDivElement;
+
+  //     if (customInput) {
+  //       customInput.oninput = () => {
+  //         customInput.style.borderColor = 'rgb(116,113,203)';
+  //         if (errorDiv) errorDiv.style.display = 'none';
+  //       };
+  //     }
+
+  //     if (useCustomBtn && customInput && errorDiv) {
+  //       useCustomBtn.onclick = async () => {
+  //         const customAmount = parseFloat(customInput.value);
+
+  //         if (!customAmount || isNaN(customAmount)) {
+  //           customInput.style.borderColor = '#ff6b6b';
+  //           errorDiv.textContent = 'Please enter a valid amount';
+  //           errorDiv.style.display = 'block';
+  //           return;
+  //         }
+
+  //         if (customAmount < 0.001) {
+  //           customInput.style.borderColor = '#ff6b6b';
+  //           errorDiv.textContent = 'Minimum stake amount is 0.001 PC';
+  //           errorDiv.style.display = 'block';
+  //           return;
+  //         }
+
+  //         customInput.style.borderColor = 'rgb(116,113,203)';
+  //         errorDiv.style.display = 'none';
+
+  //         const stakeAmount = customAmount.toString();
+  //         modal.remove();
+
+  //         const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+  //         setStakingInProgress(true);
+  //         setSelectedStakeAmount(stakeAmount);
+  //         setPendingRoomCode(roomCode);
+  //         setStakingErrorMessage(null);
+
+  //         try {
+  //           await stakeAsPlayer1(roomCode, stakeAmount);
+  //         } catch (error) {
+  //           setStakingInProgress(false);
+  //           setPendingRoomCode(null);
+  //           setSelectedStakeAmount(null);
+  //         }
+  //       };
+  //     }
+
+  //     modal.querySelectorAll('.stake-option').forEach(button => {
+  //       (button as HTMLButtonElement).onclick = async () => {
+  //         const stakeAmount = button.getAttribute('data-amount');
+  //         modal.remove();
+
+  //         if (!stakeAmount) return;
+
+  //         const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+  //         setStakingInProgress(true);
+  //         setSelectedStakeAmount(stakeAmount);
+  //         setPendingRoomCode(roomCode);
+  //         setStakingErrorMessage(null);
+
+  //         try {
+  //           await stakeAsPlayer1(roomCode, stakeAmount);
+  //         } catch (error) {
+  //           setStakingInProgress(false);
+  //           setPendingRoomCode(null);
+  //           setSelectedStakeAmount(null);
+  //         }
+  //       };
+  //     });
+  //   });
+  // };
+const handleCreateStakedMatch = () => {
+  if (!isWalletReady) {
+    toast.info('Please connect your wallet to create a staked match');
+    return;
+  }
+  promptUsername(() => {
+    const modal = document.createElement('dialog');
+    modal.className = 'stake-modal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      padding: 2rem;
+      background: rgba(20, 20, 30, 0.95);
+      color: white;
+      max-width: 90vw;
+      width: 500px;
+      z-index: 9999;
+    `;
+    modal.innerHTML = `
+      <form method="dialog">
+        <h2>Select Stake Amount</h2>
+        <p style="margin-bottom: 20px; color: #888;">Choose how much HBAR (Hedera Tokens) you want to stake</p>
+        <div class="stake-options">
+          ${STAKE_AMOUNTS.map(({ value, label }) => `
+            <button type="button" class="stake-option" data-amount="${value}">
+              ${label.replace('ETH', 'HBAR')}
             </button>
-          </div>
-          <div class="buttons" style="margin-top: 20px;">
-            <button type="button" id="cancel-stake-btn">Cancel</button>
-          </div>
-        </form>
-      `;
+          `).join('')}
+        </div>
+        <div style="margin: 20px 0; padding: 15px; background: rgba(116,113,203,0.1); border-radius: 8px;">
+          <label style="display: block; margin-bottom: 10px; color: #888; font-size: 0.9rem;">
+            Or enter custom amount (min 0.1 HBAR):
+          </label>
+          <input
+            type="number"
+            id="custom-stake-input"
+            placeholder="0.1"
+            step="0.1"
+            min="0.1"
+            style="
+              width: 100%;
+              padding: 10px;
+              background: #1a1a1a;
+              border: 1px solid rgb(116,113,203);
+              border-radius: 5px;
+              color: #fff;
+              font-size: 1rem;
+            "
+          />
+          <div id="custom-amount-error" style="
+            display: none;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid #ff6b6b;
+            border-radius: 5px;
+            color: #ff6b6b;
+            font-size: 0.75rem;
+          "></div>
+          <button
+            type="button"
+            id="use-custom-amount-btn"
+            style="
+              width: 100%;
+              margin-top: 10px;
+              padding: 10px;
+              background: rgb(116,113,203);
+              color: #000;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+              fontFamily: 'Press Start 2P', monospace;
+              font-size: 0.8rem;
+            "
+          >
+            Use Custom Amount
+          </button>
+        </div>
+        <div class="buttons" style="margin-top: 20px;">
+          <button type="button" id="cancel-stake-btn">Cancel</button>
+        </div>
+      </form>
+    `;
 
-      document.body.appendChild(modal);
-      modal.showModal();
+    document.body.appendChild(modal);
+    modal.showModal();
 
-      const cancelStakeBtn = modal.querySelector('#cancel-stake-btn') as HTMLButtonElement;
-      if (cancelStakeBtn) {
-        cancelStakeBtn.onclick = () => {
-          modal.close();
-          modal.remove();
-        };
-      }
+    const cancelStakeBtn = modal.querySelector('#cancel-stake-btn') as HTMLButtonElement;
+    if (cancelStakeBtn) {
+      cancelStakeBtn.onclick = () => {
+        modal.close();
+        modal.remove();
+      };
+    }
 
-      const customInput = modal.querySelector('#custom-stake-input') as HTMLInputElement;
-      const useCustomBtn = modal.querySelector('#use-custom-amount-btn') as HTMLButtonElement;
-      const errorDiv = modal.querySelector('#custom-amount-error') as HTMLDivElement;
+    const customInput = modal.querySelector('#custom-stake-input') as HTMLInputElement;
+    const useCustomBtn = modal.querySelector('#use-custom-amount-btn') as HTMLButtonElement;
+    const errorDiv = modal.querySelector('#custom-amount-error') as HTMLDivElement;
 
-      if (customInput) {
-        customInput.oninput = () => {
-          customInput.style.borderColor = 'rgb(116,113,203)';
-          if (errorDiv) errorDiv.style.display = 'none';
-        };
-      }
+    if (customInput) {
+      customInput.oninput = () => {
+        customInput.style.borderColor = 'rgb(116,113,203)';
+        if (errorDiv) errorDiv.style.display = 'none';
+      };
+    }
 
-      if (useCustomBtn && customInput && errorDiv) {
-        useCustomBtn.onclick = async () => {
-          const customAmount = parseFloat(customInput.value);
+    if (useCustomBtn && customInput && errorDiv) {
+      useCustomBtn.onclick = async () => {
+        const customAmount = parseFloat(customInput.value);
 
-          if (!customAmount || isNaN(customAmount)) {
-            customInput.style.borderColor = '#ff6b6b';
-            errorDiv.textContent = 'Please enter a valid amount';
-            errorDiv.style.display = 'block';
-            return;
-          }
+        if (!customAmount || isNaN(customAmount)) {
+          customInput.style.borderColor = '#ff6b6b';
+          errorDiv.textContent = 'Please enter a valid amount';
+          errorDiv.style.display = 'block';
+          return;
+        }
 
-          if (customAmount < 0.001) {
-            customInput.style.borderColor = '#ff6b6b';
-            errorDiv.textContent = 'Minimum stake amount is 0.001 PC';
-            errorDiv.style.display = 'block';
-            return;
-          }
+        if (customAmount < 0.1) {
+          customInput.style.borderColor = '#ff6b6b';
+          errorDiv.textContent = 'Minimum stake amount is 0.1 HBAR';
+          errorDiv.style.display = 'block';
+          return;
+        }
 
-          customInput.style.borderColor = 'rgb(116,113,203)';
-          errorDiv.style.display = 'none';
+        customInput.style.borderColor = 'rgb(116,113,203)';
+        errorDiv.style.display = 'none';
 
-          const stakeAmount = customAmount.toString();
-          modal.remove();
+        const stakeAmount = customAmount.toString();
+        modal.remove();
 
-          const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-          setStakingInProgress(true);
-          setSelectedStakeAmount(stakeAmount);
-          setPendingRoomCode(roomCode);
-          setStakingErrorMessage(null);
+        setStakingInProgress(true);
+        setSelectedStakeAmount(stakeAmount);
+        setPendingRoomCode(roomCode);
+        setStakingErrorMessage(null);
 
-          try {
-            await stakeAsPlayer1(roomCode, stakeAmount);
-          } catch (error) {
-            setStakingInProgress(false);
-            setPendingRoomCode(null);
-            setSelectedStakeAmount(null);
-          }
-        };
-      }
+        try {
+          await stakeAsPlayer1(roomCode, stakeAmount);
+        } catch (error) {
+          setStakingInProgress(false);
+          setPendingRoomCode(null);
+          setSelectedStakeAmount(null);
+        }
+      };
+    }
 
-      modal.querySelectorAll('.stake-option').forEach(button => {
-        (button as HTMLButtonElement).onclick = async () => {
-          const stakeAmount = button.getAttribute('data-amount');
-          modal.remove();
+    modal.querySelectorAll('.stake-option').forEach(button => {
+      (button as HTMLButtonElement).onclick = async () => {
+        const stakeAmount = button.getAttribute('data-amount');
+        modal.remove();
 
-          if (!stakeAmount) return;
+        if (!stakeAmount) return;
 
-          const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-          setStakingInProgress(true);
-          setSelectedStakeAmount(stakeAmount);
-          setPendingRoomCode(roomCode);
-          setStakingErrorMessage(null);
+        setStakingInProgress(true);
+        setSelectedStakeAmount(stakeAmount);
+        setPendingRoomCode(roomCode);
+        setStakingErrorMessage(null);
 
-          try {
-            await stakeAsPlayer1(roomCode, stakeAmount);
-          } catch (error) {
-            setStakingInProgress(false);
-            setPendingRoomCode(null);
-            setSelectedStakeAmount(null);
-          }
-        };
-      });
+        try {
+          await stakeAsPlayer1(roomCode, stakeAmount);
+        } catch (error) {
+          setStakingInProgress(false);
+          setPendingRoomCode(null);
+          setSelectedStakeAmount(null);
+        }
+      };
     });
+  });
   };
-
+  
   return (
     <div className="welcome page-shell">
       <div className="welcome__top surface-panel surface-panel--compact">

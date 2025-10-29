@@ -47,7 +47,6 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-// Normalize FRONTEND_URL by removing trailing slash
 const FRONTEND_URL = process.env.FRONTEND_URL?.replace(/\/$/, '');
 
 app.use(cors({

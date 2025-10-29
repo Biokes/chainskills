@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Welcome from './components/Welcome'
 import MultiplayerGame from './components/MultiplayerGame'
 import SpectatorView from './components/SpectatorView'
@@ -27,7 +27,7 @@ interface GameState {
 
 function App() {
   const { address, isConnected } = useAccount()
-
+  const location  = useLocation()
   const [gameState, setGameState] = useState<GameState>({
     player1: null,
     player2: null,
@@ -104,70 +104,68 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<LandingPage/>} />
-        <div>
-          <Route path="/pong"
-            element={<Welcome
-              setGameState={setGameState}
-              savedUsername={username}
-              onUsernameSet={handleUsernameSet}
-              authenticatedPlayer={authenticatedPlayer}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/pong"
+          element={<Welcome
+            setGameState={setGameState}
+            savedUsername={username}
+            onUsernameSet={handleUsernameSet}
+            authenticatedPlayer={authenticatedPlayer}
+            walletAddress={address as string}
+          />
+          }
+        />
+        <Route
+          path="/game"
+          element={
+            <MultiplayerGame
+              username={username}
               walletAddress={address as string}
+              authenticatedPlayer={authenticatedPlayer}
             />
-            }
-          />
-          <Route
-            path="/game"
-            element={
-              <MultiplayerGame
-                username={username}
-                walletAddress={address as string}
-                authenticatedPlayer={authenticatedPlayer}
-              />
-            }
-          />
-          <Route
-            path="/spectate"
-            element={<SpectatorView />}
-          />
-          <Route
-            path="/game-over"
-            element={
-              <GameOver
-              // savedUsername={username}
-              // walletAddress={address}
-              // authenticatedPlayer={authenticatedPlayer}
-              // onPlayAgain={() => {
-              //   setGameState(prev => ({
-              //     ...prev,
-              //     player1: {
-              //       name: username || 'Guest',
-              //       rating: authenticatedPlayer?.rating || 800
-              //     }
-              //   }))
-              // }}
-              />
-            }
-          />
-          <Route
-            path="/my-wins"
-            element={<MyWins />}
-          />
-          <Route
-            path="/game-history"
-            element={<GameHistory savedUsername={username} />}
-          />
-          <Route
-            path="/unclaimed-stakes"
-            element={<UnclaimedStakes />}
-          />
-          <Route
-            path="/powerups"
-            element={<PowerUpDashboard walletAddress={address as string} />}
-          />
-          <SpeakerIcon />
-        </div>
+          }
+        />
+        <Route
+          path="/spectate"
+          element={<SpectatorView />}
+        />
+        <Route
+          path="/game-over"
+          element={
+            <GameOver
+            // savedUsername={username}
+            // walletAddress={address}
+            // authenticatedPlayer={authenticatedPlayer}
+            // onPlayAgain={() => {
+            //   setGameState(prev => ({
+            //     ...prev,
+            //     player1: {
+            //       name: username || 'Guest',
+            //       rating: authenticatedPlayer?.rating || 800
+            //     }
+            //   }))
+            // }}
+            />
+          }
+        />
+        <Route
+          path="/my-wins"
+          element={<MyWins />}
+        />
+        <Route
+          path="/game-history"
+          element={<GameHistory savedUsername={username} />}
+        />
+        <Route
+          path="/unclaimed-stakes"
+          element={<UnclaimedStakes />}
+        />
+        <Route
+          path="/powerups"
+          element={<PowerUpDashboard walletAddress={address as string} />}
+        />
       </Routes>
+      {location.pathname !== '/' && <SpeakerIcon />}
     </div>
   )
 }

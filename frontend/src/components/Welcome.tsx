@@ -773,7 +773,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
             </div>
           </section>
 
-          <section className="instructions surface-panel">
+          <section className="instructions surface-panel text-medium">
             <h2>How to Play</h2>
             <p>Move your paddle to hit the ball past your opponent!</p>
             <p>Use UP/DOWN arrow keys to move your paddle</p>

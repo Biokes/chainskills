@@ -157,16 +157,18 @@ p {
 }
 
 .rankings {
-  width: clamp(300px, 70vw, 800px) !important;
-
+  width: clamp(300px, 85vw, 800px) !important;
   padding: 15px !important;
   border-radius: 20px !important;
   box-shadow: none !important;
   background-color: #120026;
   border: #DA76EC 10px solid;
 }
-
-/* Apply consistent fonts to all ranking elements */
+@media(min-width:1100px){
+  .rankings{
+    width: 100%;
+  }
+}
 .rankings h2,
 .rank,
 .name,
@@ -325,7 +327,9 @@ html, body {
   p {
     font-size: 0.7rem;
   }
-
+  .instructions{
+    height: 300px;
+  }
   .rankings {
     max-height: 300px;
   }
@@ -931,7 +935,7 @@ dialog.stake-modal h2 {
 }
 
 .App .welcome .instructions p {
-  font-size: var(--text-size-sm);
+  font-size: small;
   color: var(--color-text-muted);
 }
 

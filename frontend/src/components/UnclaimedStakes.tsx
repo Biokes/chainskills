@@ -25,9 +25,6 @@ interface AbandonedStake {
 const UnclaimedStakes: FC = () => {
   const navigate = useNavigate();
   const {isConnected, address } = useAccount();
-  // const { pushChainClient } = usePushChainClient();
-  // const address = pushChainClient?.universal?.account?.toLowerCase() || null;
-
   const [stakes, setStakes] = useState<AbandonedStake[]>([]);
   const [loading, setLoading] = useState(false);
   const [claimingGameId, setClaimingGameId] = useState<string | null>(null);
@@ -70,7 +67,6 @@ const UnclaimedStakes: FC = () => {
     }
   }, [isConnected, address, fetchAbandonedStakes]);
 
-  // Handle claim success
   useEffect(() => {
     if (isClaimSuccess && claimHash && claimingGameId) {
       const markRefundAsClaimed = async () => {
@@ -81,7 +77,6 @@ const UnclaimedStakes: FC = () => {
             body: JSON.stringify({ txHash: claimHash }),
           });
 
-          // Refresh the list
           fetchAbandonedStakes();
           setClaimingGameId(null);
         } catch (error) {}
@@ -103,7 +98,6 @@ const UnclaimedStakes: FC = () => {
   const handleClaimRefund = async (stake: AbandonedStake) => {
     setClaimErrorMessage(null);
     setClaimingGameId(stake._id);
-
     try {
       await claimRefundForAbandoned(stake.roomCode, stake.refundSignature);
     } catch (error) {}
@@ -202,11 +196,7 @@ const UnclaimedStakes: FC = () => {
                     </div>
                   )}
 
-                  <button
-                    className="btn-claim"
-                    onClick={() => handleClaimRefund(stake)}
-                    disabled={isClaimPending && claimingGameId === stake._id}
-                  >
+                  <button className="btn-claim" onClick={() => handleClaimRefund(stake)} disabled={isClaimPending && claimingGameId === stake._id || stake.refundClaimed}>
                     {claimingGameId === stake._id && isClaimPending ? (
                       <>
                         <div className="btn-spinner"></div>

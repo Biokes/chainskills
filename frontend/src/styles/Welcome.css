@@ -157,12 +157,13 @@ p {
 }
 
 .rankings {
-  width: clamp(300px, 85vw, 800px) !important;
+  width: clamp(300px, 90vw, 800px) !important;
   padding: 15px !important;
   border-radius: 20px !important;
   box-shadow: none !important;
   background-color: #120026;
   border: #DA76EC 10px solid;
+  
 }
 @media(min-width:1100px){
   .rankings{

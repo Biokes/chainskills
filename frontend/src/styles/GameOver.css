@@ -22,7 +22,7 @@
   font-family: 'Press Start 2P', 'Courier New', monospace;
 }
 
-.stats, .rankings {
+.stats {
   background: rgba(255, 255, 255, 0.1);
   padding: 2rem;
   border-radius: 8px;
@@ -31,8 +31,8 @@
   text-align: center;
 }
 
+
 .stats {
-  /* margin: 20px 0; */
   text-align: center;
 }
 

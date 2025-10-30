@@ -116,8 +116,8 @@ const UnclaimedStakes: FC = () => {
           <div className="error-state">
             <h2>🔌 Wallet Not Connected</h2>
             <p>Please connect your wallet to view unclaimed stakes</p>
-            <button onClick={() => navigate("/")} className="btn-back">
-              ← Back to Home
+            <button onClick={() => navigate("/pong")} className="btn-back">
+              ← Back
             </button>
           </div>
         </div>

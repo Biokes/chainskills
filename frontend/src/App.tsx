@@ -106,48 +106,14 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/pong"
-          element={<Welcome
-            setGameState={setGameState}
-            savedUsername={username}
-            onUsernameSet={handleUsernameSet}
-            authenticatedPlayer={authenticatedPlayer}
-            walletAddress={address as string}
-          />
-          }
-        />
-        <Route
-          path="/game"
-          element={
-            <MultiplayerGame
-              username={username}
-              walletAddress={address as string}
-              authenticatedPlayer={authenticatedPlayer}
-            />
-          }
-        />
-        <Route
-          path="/spectate"
-          element={<SpectatorView />}
-        />
+        <Route path="/pong" element={<Welcome setGameState={setGameState} savedUsername={username} onUsernameSet={handleUsernameSet} authenticatedPlayer={authenticatedPlayer} walletAddress={address as string}/>}/>
+        <Route path="/game" element={ <MultiplayerGame username={username} walletAddress={address as string} authenticatedPlayer={authenticatedPlayer}/>}/>
+        <Route path="/spectate" element={<SpectatorView />}/>
         <Route path="/game-over" element={<GameOver />}/>
-        <Route
-          path="/my-wins"
-          element={<MyWins />}
-        />
-        <Route
-          path="/game-history"
-          element={<GameHistory savedUsername={username} />}
-        />
-        <Route
-          path="/unclaimed-stakes"
-          element={<UnclaimedStakes />}
-        />
-        <Route
-          path="/powerups"
-          element={<PowerUpDashboard walletAddress={address as string} />}
-        />
-        {/* <Route path="/hub" element={<Hub/>} /> */}
+        <Route path="/my-wins" element={<MyWins />}/>
+        <Route path="/game-history" element={<GameHistory savedUsername={username} />}/>
+        <Route path="/unclaimed-stakes" element={<UnclaimedStakes />}/>
+        <Route path="/powerups" element={<PowerUpDashboard walletAddress={address as string} />}/>
       </Routes>
       {location.pathname !== '/' && location.pathname !=="/hub" && <SpeakerIcon />}
     </div>

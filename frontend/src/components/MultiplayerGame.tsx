@@ -52,7 +52,7 @@ interface LocationState {
 const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, authenticatedPlayer }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const socketRef = useRef<Socket | null>(null);
-  const isNavigatingToGameOver = useRef(false); // Track if navigating to game-over
+  const isNavigatingToGameOver = useRef(false);
   const [isWaiting, setIsWaiting] = useState(true);
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const initialGameState: GameData = {
@@ -96,10 +96,8 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
   const cursorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const ballTrailRef = useRef<Array<{ x: number; y: number; alpha: number }>>([]);
 
-  // Dialog hook
   const { dialogState, showAlert, showConfirm, handleConfirm, handleCancel } = useDialog();
 
-  // Keyboard control state
   const [keyboardPaddleY, setKeyboardPaddleY] = useState(0);
   const keysPressed = useRef<{ ArrowUp: boolean; ArrowDown: boolean }>({ ArrowUp: false, ArrowDown: false });
   const keyboardIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -358,11 +356,11 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
             });
             setTimeout(() => {
               soundManager.stopAll();
-              navigate('/');
+              navigate('/pong');
             }, 1000);
           } else {
             soundManager.stopAll();
-            navigate('/');
+            navigate('/pong');
           }
         },
         undefined,
@@ -839,14 +837,14 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
           'Game Over'
         );
         soundManager.stopAll();
-        setTimeout(() => navigate('/'), 2000);
+        setTimeout(() => navigate('/pong'), 2000);
       }
     });
 
     socket.on('playerForfeitedSelf', () => {
       toast.info('You forfeited \nReturning to home.', {duration:1000});
       soundManager.stopAll();
-      setTimeout(() => navigate('/'), 500);
+      setTimeout(() => navigate('/pong'), 500);
     });
 
     socket.on('rematchRequested', (data: { from: string }) => {
@@ -856,12 +854,12 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
 
     socket.on('rematchDeclined', () => {
       showAlert('Rematch declined', 'Rematch');
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate('/pong'), 2000);
     });
 
     socket.on('opponentLeft', () => {
       showAlert('Opponent left the game', 'Opponent Left');
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate('/pong'), 2000);
     });
 
     socket.on('opponentDisconnected', (data: { disconnectedPlayer?: string; winner?: string }) => {
@@ -874,7 +872,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
       } else {
         showAlert('Opponent disconnected', 'Opponent Disconnected');
       }
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate('/pong'), 2000);
     });
 
     socket.on('abandonmentProcessed', (data: { message: string }) => {
@@ -899,7 +897,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     isMounted.current = true;
 
     if (!username) {
-      navigate('/');
+      navigate('/pong');
       return;
     }
 
@@ -1073,11 +1071,11 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
 
             setTimeout(() => {
               soundManager.stopAll();
-              navigate('/');
+              navigate('/pong');
             }, 1000);
           } else {
             soundManager.stopAll();
-            navigate('/');
+            navigate('/pong');
           }
         },
         undefined,
@@ -1091,7 +1089,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
             socketRef.current.emit('forfeitGame');
           }
           soundManager.stopAll();
-          navigate('/');
+          navigate('/pong');
         },
         undefined,
         'Leave Game?'
@@ -1333,7 +1331,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
                       if (socketRef.current && stakingData?.roomCode) {
                         socketRef.current.emit('leaveRoomBeforeStaking', { roomCode: stakingData.roomCode });
                       }
-                      navigate('/');
+                      navigate('/pong');
                     }}
                     className="decline-btn"
                   >
@@ -1365,7 +1363,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
                       if (socketRef.current && stakingData?.roomCode) {
                         socketRef.current.emit('leaveRoomBeforeStaking', { roomCode: stakingData.roomCode });
                       }
-                      navigate('/');
+                      navigate('/pong');
                     }}
                     className="decline-btn"
                   >

@@ -130,25 +130,7 @@ function App() {
           path="/spectate"
           element={<SpectatorView />}
         />
-        <Route
-          path="/game-over"
-          element={
-            <GameOver
-            // savedUsername={username}
-            // walletAddress={address}
-            // authenticatedPlayer={authenticatedPlayer}
-            // onPlayAgain={() => {
-            //   setGameState(prev => ({
-            //     ...prev,
-            //     player1: {
-            //       name: username || 'Guest',
-            //       rating: authenticatedPlayer?.rating || 800
-            //     }
-            //   }))
-            // }}
-            />
-          }
-        />
+        <Route path="/game-over" element={<GameOver />}/>
         <Route
           path="/my-wins"
           element={<MyWins />}

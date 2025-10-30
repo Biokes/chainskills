@@ -86,7 +86,6 @@ const UnclaimedStakes: FC = () => {
     }
   }, [isClaimSuccess, claimHash, claimingGameId, fetchAbandonedStakes]);
 
-  // Handle claim error
   useEffect(() => {
     if (claimError) {
       const parsedError = parseTransactionError(claimError);

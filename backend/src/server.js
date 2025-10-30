@@ -50,7 +50,7 @@ process.on('unhandledRejection', (reason, promise) => {
 const FRONTEND_URL = process.env.FRONTEND_URL?.replace(/\/$/, '');
 
 app.use(cors({
-  origin: FRONTEND_URL,
+  origin: [FRONTEND_URL,"https://github.com"],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -90,9 +90,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ============ PLAYER ENDPOINTS ============
 
-// Get all players
 app.get('/players', async (req, res) => {
   try {
     const playersList = await Player.find()

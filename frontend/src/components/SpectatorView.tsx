@@ -132,14 +132,14 @@ const SpectatorView: FC = () => {
       socketRef.current.emit('leaveSpectate');
       socketRef.current.disconnect();
     }
-    navigate('/');
+    navigate('/pong');
   }, [navigate]);
 
   useEffect(() => {
     isMounted.current = true;
 
     if (!roomCode || !spectatorName) {
-      navigate('/');
+      navigate('/pong');
       return;
     }
 
@@ -186,13 +186,13 @@ const SpectatorView: FC = () => {
 
     socket.on('gameOver', (result: any) => {
       showAlert('Game has ended!', 'Game Over');
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate('/pong'), 2000);
       console.log(result)
     });
 
     socket.on('error', (error: { message: string }) => {
       showAlert(error.message, 'Error');
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate('/pong'), 2000);
     });
 
     return () => {

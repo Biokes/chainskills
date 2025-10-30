@@ -33,13 +33,13 @@ const GameOver: React.FC = () => {
 
   useEffect(() => {
     if (!result) {
-      navigate('/');
+      navigate('/pong');
       return;
     }
 
     const username = result.playerName;
     if (!username) {
-      navigate('/');
+      navigate('/pong');
       return;
     }
 
@@ -119,7 +119,7 @@ const GameOver: React.FC = () => {
       socketRef.current.emit('leaveRoom');
       socketRef.current.disconnect();
     }
-    navigate('/');
+    navigate('/pong');
   };
 
   const handleClaimPrize = () => {

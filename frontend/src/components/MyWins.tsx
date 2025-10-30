@@ -164,7 +164,7 @@ const MyWins: FC = () => {
     return (
       <div className="my-wins-container">
         <div className="my-wins-header">
-          <button onClick={() => navigate('/')} className="back-button">← Back</button>
+          <button onClick={() => navigate('/pong')} className="back-button">← Back</button>
           <h1>My Wins</h1>
         </div>
         <div className="connect-wallet-prompt">
@@ -179,7 +179,7 @@ const MyWins: FC = () => {
     return (
       <div className="my-wins-container">
         <div className="my-wins-header">
-          <button onClick={() => navigate('/')} className="back-button">← Back</button>
+          <button onClick={() => navigate('/pong')} className="back-button">← Back</button>
           <h1>My Wins</h1>
         </div>
         <div className="loading">Resolving your Universal Executor Account...</div>
@@ -191,7 +191,7 @@ const MyWins: FC = () => {
     <div className="my-wins-container">
       <AddressDisplay />
       <div className="my-wins-header">
-        <button onClick={() => navigate('/')} className="back-button">← Back</button>
+        <button onClick={() => navigate('/pong')} className="back-button">← Back</button>
         <h1>My Wins</h1>
       </div>
 
@@ -279,7 +279,7 @@ const MyWins: FC = () => {
           <div className="no-wins">
             <p>No wins yet!</p>
             <p>Play some staked matches to win prizes</p>
-            <button onClick={() => navigate('/')} className="play-button">
+            <button onClick={() => navigate('/pong')} className="play-button">
               Play Now
             </button>
           </div>

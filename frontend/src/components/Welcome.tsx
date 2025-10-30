@@ -45,7 +45,6 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
   const [pendingRoomCode, setPendingRoomCode] = useState<string | null>(null);
   const [stakingErrorMessage, setStakingErrorMessage] = useState<string | null>(null);
   const [unclaimedStakesCount, setUnclaimedStakesCount] = useState<number>(0);
-  // const titleRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const socketRef = useRef<Socket | null>(null);
   const { openConnectModal } = useConnectModal()

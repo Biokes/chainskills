@@ -541,7 +541,7 @@ const PowerUpDashboard: FC<PowerUpDashboardProps> = ({ walletAddress }) => {
           <button type="button" onClick={() => navigate("/pong")}>
             ← Back
           </button>
-          <h2>PONG-IT Power-Ups</h2>
+          <h2>Power-Ups</h2>
         </header>
         <p className="empty">Connect your wallet to manage your boosts.</p>
       </div>
@@ -555,7 +555,7 @@ const PowerUpDashboard: FC<PowerUpDashboardProps> = ({ walletAddress }) => {
           <button type="button" onClick={() => navigate("/pong")}>
             ← Back
           </button>
-          <h2>PONG-IT Power-Ups</h2>
+          <h2>Power-Ups</h2>
         </header>
         <p className="empty">
           {isLoading ? "Loading power-ups..." : "No data available yet."}
@@ -571,9 +571,9 @@ const PowerUpDashboard: FC<PowerUpDashboardProps> = ({ walletAddress }) => {
           ← Back
         </button>
         <div>
-          <h2>PONG-IT Power-Ups</h2>
+          <h2>Power-Ups</h2>
           <p>
-            Contract: <code>{PONG_POWERUPS_ADDRESS}</code>
+            Contract: <code style={{fontSize:'large'}}>{PONG_POWERUPS_ADDRESS.substring(0,4)+"..."+PONG_POWERUPS_ADDRESS.substring(40)}</code>
           </p>
         </div>
       </header>

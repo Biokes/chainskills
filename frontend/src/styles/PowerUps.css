@@ -17,10 +17,11 @@
   background: #2f1f4f;
   border: 1px solid #7645d9;
   color: #f4ceff;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: clamp(0.7rem, 1.2vw, 1rem);
 }
 
 .powerup-header button:hover {
@@ -47,16 +48,17 @@
 
 .powerup-card header h3 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: normal;
 }
 
 .powerup-card header button {
   background: transparent;
   border: 1px solid rgba(244, 206, 255, 0.4);
   color: #f4ceff;
-  padding: 0.35rem 0.8rem;
+  padding: 0.35rem 0.6rem;
   border-radius: 6px;
   cursor: pointer;
+  font-size: small;
 }
 
 .powerup-grid {
@@ -89,13 +91,13 @@
 
 .powerup-copy h4 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .powerup-copy p {
   margin: 0;
   color: rgba(245, 245, 245, 0.75);
-  font-size: 0.9rem;
+  font-size: small;
 }
 
 .powerup-tile dl {
@@ -112,7 +114,7 @@
 }
 
 .powerup-tile dt {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: rgba(244, 206, 255, 0.6);
@@ -121,6 +123,8 @@
 .powerup-tile dd {
   margin: 0;
   font-weight: 600;
+    font-size: 0.65rem;
+    padding-left: 10px;
 }
 
 .crate-section {
@@ -175,9 +179,10 @@
   background: #2f1f4f;
   border: 1px solid rgba(118, 69, 217, 0.5);
   color: #f4ceff;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.7rem;
   border-radius: 8px;
   cursor: pointer;
+  font-size: small;
 }
 
 .form-grid {
@@ -272,10 +277,6 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Layout refresh                                                             */
-/* -------------------------------------------------------------------------- */
-
 .App .powerup-page {
   min-height: 100vh;
   width: min(var(--max-content-width), calc(100% - 2 * var(--page-padding)));
@@ -292,7 +293,7 @@
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-surface);
-  padding: clamp(1.1rem, 2.5vw, 2rem);
+  padding: clamp(1.1rem, 2vw, 1rem);
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -301,9 +302,16 @@
 .App .powerup-page .powerup-header h1,
 .App .powerup-page .powerup-header h2 {
   margin: 0;
-  font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+  font-size: clamp(1rem, 2.4vw, 1.5rem);
   color: var(--color-primary);
   text-shadow: 0 0 18px rgba(218, 118, 236, 0.3);
+}
+@media (max-width: 768px) {
+  .App .powerup-page .powerup-header h1,
+  .App .powerup-page .powerup-header h2 {
+  font-size: clamp(1rem, 2vw, 1.4rem);
+
+  }
 }
 
 .App .powerup-page .powerup-header button {
@@ -311,7 +319,7 @@
   color: #05000f;
   border: none;
   border-radius: var(--border-radius-sm);
-  padding: 0.75rem 1.6rem;
+  padding: 0.5rem 1rem;
   box-shadow: 0 0 20px rgba(218, 118, 236, 0.3);
 }
 

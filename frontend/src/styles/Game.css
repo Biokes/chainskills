@@ -1006,6 +1006,6 @@ body .endgame-container > *,
 
 @media (max-width: 768px) {
   .App .game-container {
-    padding: clamp(1rem, 5vw, 2rem);
+    padding: clamp(0.5rem, 2vw, 1.3rem);
   }
 }

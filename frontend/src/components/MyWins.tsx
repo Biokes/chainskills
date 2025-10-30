@@ -174,18 +174,7 @@ const MyWins: FC = () => {
     );
   }
 
-  // Show loading while UEA is being resolved
-  if (isConnecting || !address) {
-    return (
-      <div className="my-wins-container">
-        <div className="my-wins-header">
-          <button onClick={() => navigate('/pong')} className="back-button">← Back</button>
-          <h1>My Wins</h1>
-        </div>
-        <div className="loading">Resolving your Universal Executor Account...</div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="my-wins-container">

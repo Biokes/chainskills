@@ -156,15 +156,14 @@ p {
   line-height: 1.5;
 }
 
-/* Reset and redefine rankings container - remove background and border */
 .rankings {
-  width: 100%;
-  max-width: 600px;
-  margin: 20px auto;
-  background-color: transparent !important;
-  padding: 0 !important;
-  border: none !important;
+  width: clamp(300px, 70vw, 800px) !important;
+
+  padding: 15px !important;
+  border-radius: 20px !important;
   box-shadow: none !important;
+  background-color: #120026;
+  border: #DA76EC 10px solid;
 }
 
 /* Apply consistent fonts to all ranking elements */

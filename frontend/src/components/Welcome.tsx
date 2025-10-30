@@ -329,7 +329,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
 
   const handleStartGame = () => {
     if (!isWalletReady) {
-      toast.error('Please connect your wallet to start a match.', {duration:2000});
+      showAlert('Please connect your wallet to start a game.', 'Wallet Not Connected');
       return;
     }
     promptUsername((username) => {
@@ -428,7 +428,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
 
   const handleCreateStakedMatch = () => {
     if (!isWalletReady) {
-      toast.info('Please connect your wallet to create a staked match');
+      showAlert('Please connect your wallet to Create a staked matchc.', 'Wallet Not Connected');
       return;
     }
     promptUsername(() => {

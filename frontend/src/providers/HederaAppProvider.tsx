@@ -1,5 +1,5 @@
 import '@rainbow-me/rainbowkit/styles.css';
-import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { darkTheme, getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -69,7 +69,7 @@ function ChainSwitcher({ children }: { children: React.ReactNode }) {
               }
             ]
           });
-          
+
           await window.ethereum?.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: HEDERA_TESTNET_HEX }],
@@ -90,7 +90,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
+        <RainbowKitProvider
+          theme={darkTheme({
+            accentColor: '#DA76EC',
+            accentColorForeground: 'white',
+            borderRadius: 'medium',
+            fontStack: 'system',
+            overlayBlur: 'small',
+          })}
+        >
           <ChainSwitcher>
             {children}
           </ChainSwitcher>

@@ -17,8 +17,19 @@ const Dialog: FC<DialogProps> = ({ dialogState, onConfirm, onCancel }) => {
 
     if (dialogState.isOpen) {
       dialog.showModal()
+      // Prevent body scroll when dialog opens
+      document.body.style.overflow = 'hidden'
+      document.body.style.paddingRight = 'var(--scrollbar-width, 0px)'
     } else {
       dialog.close()
+      // Restore body scroll when dialog closes
+      document.body.style.overflow = ''
+      document.body.style.paddingRight = ''
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+      document.body.style.paddingRight = ''
     }
   }, [dialogState.isOpen])
 
@@ -81,4 +92,3 @@ const Dialog: FC<DialogProps> = ({ dialogState, onConfirm, onCancel }) => {
 }
 
 export default Dialog
-

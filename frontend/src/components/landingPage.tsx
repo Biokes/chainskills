@@ -26,12 +26,12 @@ export default function LandingPage() {
                         <h1 className="text-6xl md:text-8xl font-[700] ribeye">
                             <span className="text-gradient">Chainskills Arena</span>
                         </h1>
-                        <p className="text-sm md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto hero_bold">
-                            <span className="text-gradient">
+                        <div className="text-sm md:text-xl text-muted-foreground mb-8  mx-auto hero_bold w-full text-center flex flex-col justify-center items-center">
+                            <span className="text-gradient  flex text-center">
                                 Connect, Play competitive games. Win crypto.
                             </span>
-                            <br /> Join the on-chain gaming revolution.
-                        </p>
+                            <span> Join the on-chain gaming revolution.</span>
+                        </div>
                     </motion.div>
 
                     <motion.div

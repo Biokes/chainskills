@@ -7,8 +7,12 @@
   font-family: 'Press Start 2P', monospace;
   box-shadow: 0 0 30px rgba(218, 118, 236, 0.5);
   min-width: 400px;
-  max-width: 90vw;
+  max-width: 300px;
   animation: dialogSlideIn 0.3s ease-out;
+  position: fixed;
+  top: 35%;
+  left: 35%;
+  
 }
 
 .custom-dialog::backdrop {
@@ -121,10 +125,9 @@
   color: #4444ff;
 }
 
-/* Mobile responsive */
 @media (max-width: 600px) {
   .custom-dialog {
-    min-width: 90vw;
+    min-width: 250px;
   }
 
   .dialog-content {
@@ -145,10 +148,6 @@
     min-width: 100px;
   }
 }
-
-/* -------------------------------------------------------------------------- */
-/* Layout refresh                                                             */
-/* -------------------------------------------------------------------------- */
 
 .App .custom-dialog {
   background: var(--color-surface);

@@ -428,7 +428,7 @@ const Welcome: FC<WelcomeProps> = ({ setGameState, savedUsername, onUsernameSet,
 
   const handleCreateStakedMatch = () => {
     if (!isWalletReady) {
-      showAlert('Please connect your wallet to Create a staked matchc.', 'Wallet Not Connected');
+      showAlert('Please connect your wallet to Create a staked match.', 'Wallet Not Connected');
       return;
     }
     promptUsername(() => {

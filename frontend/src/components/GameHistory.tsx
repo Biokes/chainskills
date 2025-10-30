@@ -135,7 +135,7 @@ const GameHistory: React.FC<GameHistoryProps> = ({ savedUsername }) => {
     return (
       <div className="game-history-container">
         <div className="game-history-header">
-          <button onClick={() => navigate('/')} className="back-button">← Back</button>
+          <button onClick={() => navigate('/pong')} className="back-button">← Back</button>
           <h1>Game History</h1>
           <AddressDisplay />
         </div>
@@ -152,12 +152,11 @@ const GameHistory: React.FC<GameHistoryProps> = ({ savedUsername }) => {
   return (
     <div className="game-history-container">
       <div className="game-history-header">
-        <button onClick={() => navigate('/')} className="back-button">← Back</button>
+        <button onClick={() => navigate('/pong')} className="back-button">← Back</button>
         <h1>Game History</h1>
         <AddressDisplay />
       </div>
 
-      {/* Stats Cards */}
       {stats && (
         <div className="stats-section">
           <div className="stat-card">
@@ -240,7 +239,7 @@ const GameHistory: React.FC<GameHistoryProps> = ({ savedUsername }) => {
           <div className="no-games">
             <p>No games found!</p>
             <p>Start playing to build your history</p>
-            <button onClick={() => navigate('/')} className="play-button">
+            <button onClick={() => navigate('/pong')} className="play-button">
               Play Now
             </button>
           </div>

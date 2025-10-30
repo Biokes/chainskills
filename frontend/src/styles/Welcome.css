@@ -165,21 +165,16 @@ p {
   border: #DA76EC 10px solid;
   
 }
-@media(min-width:1100px){
-  .rankings{
-    width: 100%;
-  }
-}
+
 .rankings h2,
 .rank,
 .name,
 .rating,
 .stats,
 .no-rankings {
-  font-family: 'Press Start 2P', monospace !important; /* Ensure consistent pixelated font */
+  font-family: 'Press Start 2P', monospace !important; 
 }
 
-/* Rankings title - match How to Play heading */
 .rankings h2 {
   color: #DA76EC;
   margin-bottom: 15px;

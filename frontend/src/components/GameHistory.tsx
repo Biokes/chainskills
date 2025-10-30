@@ -177,7 +177,7 @@ const GameHistory: React.FC<GameHistoryProps> = ({ savedUsername }) => {
           </div>
           <div className="stat-card highlight">
             <span className="stat-label">Earnings</span>
-            <span className="stat-value">{formatEarnings(stats.totalEarnings)} PC</span>
+            <span className="stat-value">{formatEarnings(stats.totalEarnings)} HBAR</span>
           </div>
         </div>
       )}

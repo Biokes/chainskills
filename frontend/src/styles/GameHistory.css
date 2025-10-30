@@ -103,7 +103,7 @@
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1rem;
   color: rgb(253, 208, 64);
   font-family: 'Press Start 2P', monospace;
   font-weight: bold;
@@ -438,11 +438,11 @@
   }
 
   .stat-card {
-    padding: 1rem;
+    padding: 0.4rem 0.52rem;
   }
 
   .stat-value {
-    font-size: 1.2rem;
+    font-size: 0.82rem;
   }
 
   .filter-toolbar {
@@ -533,20 +533,17 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Layout refresh                                                             */
-/* -------------------------------------------------------------------------- */
 
 .App .game-history-container {
   min-height: 100vh;
   width: min(var(--max-content-width), calc(100% - 2 * var(--page-padding)));
   margin: 0 auto;
-  padding: var(--page-padding);
+  padding: clamp(5px, 2rem, 10px);
   border: none;
   background: transparent;
   display: flex;
   flex-direction: column;
-  gap: var(--section-gap);
+  gap: 1%;
   color: var(--color-text);
 }
 
@@ -564,7 +561,7 @@
 
 .App .game-history-container .game-history-header h1 {
   margin: 0;
-  font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+  font-size: clamp(1rem, 2.4vw, 2.4rem);
   color: var(--color-primary);
   text-shadow: 0 0 20px rgba(218, 118, 236, 0.35);
   text-align: center;
@@ -603,10 +600,16 @@
   color: #05000f;
   border: none;
   box-shadow: 0 0 18px rgba(218, 118, 236, 0.3);
-  padding: 0.75rem 1.5rem;
+  padding: 0.4rem 0.7rem;
+}
+.App .game-history-container .stats-section{
+   background: var(--color-surface);
+  border: var(--border-width) solid rgba(218, 118, 236, 0.35);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-surface);
+  padding: 15px;
 }
 
-.App .game-history-container .stats-section,
 .App .game-history-container .filter-toolbar,
 .App .game-history-container .games-content {
   background: var(--color-surface);

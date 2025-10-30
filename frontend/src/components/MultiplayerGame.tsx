@@ -795,7 +795,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
       setActiveShield(null);
       setPowerUpMessage(null);
       setShieldMessage(null);
-    
+
       isNavigatingToGameOver.current = true;
 
       navigate('/game-over', {
@@ -806,7 +806,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
           message: isWinner ? 'You Won!' : 'You Lost!',
           rating: result.ratings?.[socket.id],
           finalScore: result.finalScore || result.stats?.score,
-          roomCode: result.roomCode 
+          roomCode: result.roomCode
         }
       });
     });
@@ -816,10 +816,10 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
       setPausedBy(data.pausedBy);
       if (data.pausedBy === username) {
         setPausesRemaining(data.pausesRemaining);
-        toast.info('No more pauses remaining.', {duration: 1000});
+        toast.info('No more pauses remaining.', { duration: 1000 });
       } else {
         setOpponentPausesRemaining(data.pausesRemaining);
-        toast.info(`${data.pausedBy} paused`, {duration:3000});
+        toast.info(`${data.pausedBy} paused`, { duration: 3000 });
       }
       setPauseCountdown(10);
     });
@@ -842,7 +842,7 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
     });
 
     socket.on('playerForfeitedSelf', () => {
-      toast.info('You forfeited \nReturning to home.', {duration:1000});
+      toast.info('You forfeited \nReturning to home.', { duration: 1000 });
       soundManager.stopAll();
       setTimeout(() => navigate('/pong'), 500);
     });
@@ -1107,295 +1107,305 @@ const MultiplayerGame: FC<MultiplayerGameProps> = ({ username, walletAddress, au
   const activeSpeedOwnerName = boostActive ? gameData.players[activeSpeedBoost!.playerIndex]?.name : null;
 
   return (
-    <div className="game-container" ref={containerRef} style={{ touchAction: 'none' }}>
-      <AddressDisplay />
-      <button onClick={handleLeaveGame} className="back-button" aria-label="Leave game">
-        ← Back
-      </button>
-
-      {!isWaiting && (isPlayer1 || isPlayer2) && (
-        <>
-          <div className={`paddle-indicator left ${isPlayer1 ? 'active' : ''}`}>
-            {isPlayer1 && '← You'}
-          </div>
-          <div className={`paddle-indicator right ${isPlayer2 ? 'active' : ''}`}>
-            {isPlayer2 && 'You →'}
-          </div>
-        </>
-      )}
-
-      <div className="player-names">
-        <span>{gameData.players[0]?.name || 'Player 1'}</span>
-        <span>{gameData.players[1]?.name || 'Player 2'}</span>
+    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <div className="absolute inset-0">
+        <img
+          src={"/background3.jpeg"}
+          alt="ChainSkills Arena"
+          className="w-full h-full object-cover opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/20 to-background" />
       </div>
+      <div className="game-container" ref={containerRef} style={{ touchAction: 'none' }}>
+        <AddressDisplay />
+        <button onClick={handleLeaveGame} className="back-button" aria-label="Leave game">
+          ← Back
+        </button>
 
-      <div className="score-board">
-        <span>{gameData.score[0]}</span>
-        <span>{gameData.score[1]}</span>
-      </div>
+        {!isWaiting && (isPlayer1 || isPlayer2) && (
+          <>
+            <div className={`paddle-indicator left ${isPlayer1 ? 'active' : ''}`}>
+              {isPlayer1 && '← You'}
+            </div>
+            <div className={`paddle-indicator right ${isPlayer2 ? 'active' : ''}`}>
+              {isPlayer2 && 'You →'}
+            </div>
+          </>
+        )}
 
-      {roomCode && (
-        <div className="room-info">
-          <span className="room-code-display">Room: {roomCode}</span>
+        <div className="player-names">
+          <span>{gameData.players[0]?.name || 'Player 1'}</span>
+          <span>{gameData.players[1]?.name || 'Player 2'}</span>
         </div>
-      )}
 
-      <div className="powerup-bar">
-        <div className="powerup-buttons">
-          <button
-            className="powerup-btn"
-            onClick={handleActivateSpeedBoost}
-            disabled={speedAvailability.total <= 0 || boostActive || isFetchingPowerUps}
-          >
-            {`⚡ ${speedBoostMeta.name} (${speedAvailability.total})`}
-          </button>
-          <button
-            className="powerup-btn"
-            onClick={handleActivateShield}
-            disabled={shieldAvailability.total <= 0 || (activeShield && activeShield.playerIndex === playerIndex) || isFetchingPowerUps}
-          >
-            {`🛡 ${shieldMeta.name} (${shieldAvailability.total})`}
-          </button>
-          <button
-            className="powerup-btn"
-            onClick={handleActivateMultiball}
-            disabled={multiballAvailability.total <= 0 || (activeMultiball && activeMultiball.expiresAt > Date.now()) || isFetchingPowerUps}
-          >
-            {`💥 ${multiballMeta.name} (${multiballAvailability.total})`}
-          </button>
+        <div className="score-board">
+          <span>{gameData.score[0]}</span>
+          <span>{gameData.score[1]}</span>
         </div>
-        <div className="powerup-status-line">
-          {isFetchingPowerUps && (
-            <span className="powerup-status info">Updating inventory…</span>
-          )}
-          {isMySpeedBoostActive && (
-            <span className="powerup-status active">
-              {speedBoostMeta.name} active · {speedBoostCountdown}s
-            </span>
-          )}
-          {!isMySpeedBoostActive && opponentSpeedBoostActive && (
-            <span className="powerup-status opponent">
-              {activeSpeedOwnerName || 'Opponent'} activated {speedBoostMeta.name}!
-            </span>
-          )}
-          {activeShield && activeShield.playerIndex === playerIndex && (
-            <span className="powerup-status active">Guardian Shield armed</span>
-          )}
-          {activeShield && activeShield.playerIndex !== playerIndex && (
-            <span className="powerup-status opponent">
-              {(gameData.players[activeShield.playerIndex]?.name || 'Opponent')} armed Guardian Shield
-            </span>
-          )}
-          {activeMultiball && activeMultiball.playerIndex === playerIndex && (
-            <span className="powerup-status active">Multiball active</span>
-          )}
-          {activeMultiball && activeMultiball.playerIndex !== playerIndex && (
-            <span className="powerup-status opponent">
-              {(gameData.players[activeMultiball.playerIndex]?.name || 'Opponent')} active Multiball
-            </span>
-          )}
-          {speedAvailability.delegated > 0 && (
-            <span className="powerup-status info">Borrowed ⚡: {speedAvailability.delegated}</span>
-          )}
-          {shieldAvailability.delegated > 0 && (
-            <span className="powerup-status info">Borrowed 🛡: {shieldAvailability.delegated}</span>
-          )}
-          {multiballAvailability.delegated > 0 && (
-            <span className="powerup-status info">Borrowed 💥: {multiballAvailability.delegated}</span>
-          )}
-          {!boostActive && powerUpMessage && (
-            <span className="powerup-status opponent">{powerUpMessage}</span>
-          )}
-          {shieldMessage && (
-            <span className="powerup-status info">{shieldMessage}</span>
-          )}
-          {multiballMessage && (
-            <span className="powerup-status info">{multiballMessage}</span>
-          )}
-        </div>
-      </div>
 
-      {!isWaiting && (
-        <>
-          <div className="controls-hint" style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            fontSize: '12px',
-            color: 'rgba(255, 255, 255, 0.6)',
-            fontFamily: 'monospace',
-            textAlign: 'right',
-            lineHeight: '1.4'
-          }}>
-            <div>🎮 Controls:</div>
-            <div>↑↓ Arrow Keys</div>
-            <div>or Mouse</div>
+        {roomCode && (
+          <div className="room-info">
+            <span className="room-code-display">Room: {roomCode}</span>
           </div>
-          <div className="game-controls">
+        )}
+
+        <div className="powerup-bar">
+          <div className="powerup-buttons">
             <button
-              onClick={handlePauseGame}
-              disabled={isPaused || pausesRemaining <= 0}
-              className="control-btn pause-btn"
+              className="powerup-btn"
+              onClick={handleActivateSpeedBoost}
+              disabled={speedAvailability.total <= 0 || boostActive || isFetchingPowerUps}
             >
-              Pause ({pausesRemaining})
+              {`⚡ ${speedBoostMeta.name} (${speedAvailability.total})`}
             </button>
             <button
-              onClick={handleForfeitGame}
-              className="control-btn forfeit-btn"
+              className="powerup-btn"
+              onClick={handleActivateShield}
+              disabled={shieldAvailability.total <= 0 || (activeShield && activeShield.playerIndex === playerIndex) || isFetchingPowerUps}
             >
-              Forfeit
+              {`🛡 ${shieldMeta.name} (${shieldAvailability.total})`}
+            </button>
+            <button
+              className="powerup-btn"
+              onClick={handleActivateMultiball}
+              disabled={multiballAvailability.total <= 0 || (activeMultiball && activeMultiball.expiresAt > Date.now()) || isFetchingPowerUps}
+            >
+              {`💥 ${multiballMeta.name} (${multiballAvailability.total})`}
             </button>
           </div>
-        </>
-      )}
-
-      {isPaused && (
-        <div className="pause-overlay">
-          <div className="pause-modal">
-            <h2>Game Paused</h2>
-            <p>
-              {pausedBy === username ? 'You' : pausedBy} paused the game.
-            </p>
-            <div className="pause-status">
-              <span>💠 You: {pausesRemaining} pause{pausesRemaining !== 1 ? 's' : ''} left</span>
-              <span>💠 Opponent: {opponentPausesRemaining} pause{opponentPausesRemaining !== 1 ? 's' : ''} left</span>
-            </div>
-            <p>
-              Resuming in {pauseCountdown ?? 0} second{(pauseCountdown ?? 0) !== 1 ? 's' : ''}...
-            </p>
-          </div>
-        </div>
-      )}
-
-      {showRematchRequest && (
-        <div className="rematch-overlay">
-          <div className="rematch-modal">
-            <h2>Rematch Request</h2>
-            <p>{rematchRequester} wants a rematch!</p>
-            <div className="rematch-buttons">
-              <button
-                onClick={() => handleRematchResponse(true)}
-                className="accept-btn"
-              >
-                Accept
-              </button>
-              <button
-                onClick={() => handleRematchResponse(false)}
-                className="decline-btn"
-              >
-                Decline
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showPlayer2StakingModal && stakingData && (
-        <div className="transaction-overlay">
-          <div className="transaction-modal">
-            <h2>💎 Staked Match</h2>
-            <p style={{ marginBottom: '20px' }}>
-              This is a staked match. You need to stake {stakingData.stakeAmount} PC to join.
-            </p>
-
-            {stakingErrorMessage && !isPlayer2Staking ? (
-              <>
-                <div style={{
-                  backgroundColor: '#ff4444',
-                  color: 'white',
-                  padding: '15px',
-                  borderRadius: '8px',
-                  marginBottom: '20px',
-                  fontSize: '14px'
-                }}>
-                  ❌ {stakingErrorMessage}
-                </div>
-                <p style={{ fontSize: '14px', color: '#888', marginBottom: '20px' }}>
-                  {isConnected
-                    ? `Your wallet: ${userAddress?.slice(0, 10)}...${userAddress?.slice(-4)}`
-                    : 'Please connect your wallet first'}
-                </p>
-                <div className="rematch-buttons">
-                  <button
-                    onClick={handlePlayer2Stake}
-                    className="accept-btn"
-                    disabled={!isConnected}
-                  >
-                    Retry Staking
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowPlayer2StakingModal(false);
-                      setStakingData(null);
-                      setStakingErrorMessage(null);
-                      if (socketRef.current && stakingData?.roomCode) {
-                        socketRef.current.emit('leaveRoomBeforeStaking', { roomCode: stakingData.roomCode });
-                      }
-                      navigate('/pong');
-                    }}
-                    className="decline-btn"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            ) : !isPlayer2Staking ? (
-              <>
-                <p style={{ fontSize: '14px', color: '#888', marginBottom: '20px' }}>
-                  {isConnected
-                    ? `Your wallet: ${userAddress?.slice(0, 10)}...${userAddress?.slice(-4)}`
-                    : 'Please connect your wallet first'}
-                </p>
-                <div className="rematch-buttons">
-                  <button
-                    onClick={handlePlayer2Stake}
-                    className="accept-btn"
-                    disabled={!isConnected}
-                  >
-                    Stake & Play
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowPlayer2StakingModal(false);
-                      setStakingData(null);
-                      setStakingErrorMessage(null);
-                      // Emit leaveRoom before navigating so backend knows we're leaving before staking
-                      if (socketRef.current && stakingData?.roomCode) {
-                        socketRef.current.emit('leaveRoomBeforeStaking', { roomCode: stakingData.roomCode });
-                      }
-                      navigate('/pong');
-                    }}
-                    className="decline-btn"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h3>
-                  {isPlayer2StakingPending && 'Confirm Transaction in Wallet...'}
-                  {isPlayer2StakingConfirming && 'Transaction Confirming...'}
-                </h3>
-                <div className="transaction-spinner"></div>
-                <p>
-                  {isPlayer2StakingPending && 'Please confirm the transaction in your wallet'}
-                  {isPlayer2StakingConfirming && 'Waiting for blockchain confirmation'}
-                </p>
-              </>
+          <div className="powerup-status-line">
+            {isFetchingPowerUps && (
+              <span className="powerup-status info">Updating inventory…</span>
+            )}
+            {isMySpeedBoostActive && (
+              <span className="powerup-status active">
+                {speedBoostMeta.name} active · {speedBoostCountdown}s
+              </span>
+            )}
+            {!isMySpeedBoostActive && opponentSpeedBoostActive && (
+              <span className="powerup-status opponent">
+                {activeSpeedOwnerName || 'Opponent'} activated {speedBoostMeta.name}!
+              </span>
+            )}
+            {activeShield && activeShield.playerIndex === playerIndex && (
+              <span className="powerup-status active">Guardian Shield armed</span>
+            )}
+            {activeShield && activeShield.playerIndex !== playerIndex && (
+              <span className="powerup-status opponent">
+                {(gameData.players[activeShield.playerIndex]?.name || 'Opponent')} armed Guardian Shield
+              </span>
+            )}
+            {activeMultiball && activeMultiball.playerIndex === playerIndex && (
+              <span className="powerup-status active">Multiball active</span>
+            )}
+            {activeMultiball && activeMultiball.playerIndex !== playerIndex && (
+              <span className="powerup-status opponent">
+                {(gameData.players[activeMultiball.playerIndex]?.name || 'Opponent')} active Multiball
+              </span>
+            )}
+            {speedAvailability.delegated > 0 && (
+              <span className="powerup-status info">Borrowed ⚡: {speedAvailability.delegated}</span>
+            )}
+            {shieldAvailability.delegated > 0 && (
+              <span className="powerup-status info">Borrowed 🛡: {shieldAvailability.delegated}</span>
+            )}
+            {multiballAvailability.delegated > 0 && (
+              <span className="powerup-status info">Borrowed 💥: {multiballAvailability.delegated}</span>
+            )}
+            {!boostActive && powerUpMessage && (
+              <span className="powerup-status opponent">{powerUpMessage}</span>
+            )}
+            {shieldMessage && (
+              <span className="powerup-status info">{shieldMessage}</span>
+            )}
+            {multiballMessage && (
+              <span className="powerup-status info">{multiballMessage}</span>
             )}
           </div>
         </div>
-      )}
 
-      <canvas ref={canvasRef} />
+        {!isWaiting && (
+          <>
+            <div className="controls-hint" style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              fontSize: '12px',
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontFamily: 'monospace',
+              textAlign: 'right',
+              lineHeight: '1.4'
+            }}>
+              <div>🎮 Controls:</div>
+              <div>↑↓ Arrow Keys</div>
+              <div>or Mouse</div>
+            </div>
+            <div className="game-controls">
+              <button
+                onClick={handlePauseGame}
+                disabled={isPaused || pausesRemaining <= 0}
+                className="control-btn pause-btn"
+              >
+                Pause ({pausesRemaining})
+              </button>
+              <button
+                onClick={handleForfeitGame}
+                className="control-btn forfeit-btn"
+              >
+                Forfeit
+              </button>
+            </div>
+          </>
+        )}
 
-      <Dialog
-        dialogState={dialogState}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
-    </div>
+        {isPaused && (
+          <div className="pause-overlay">
+            <div className="pause-modal">
+              <h2>Game Paused</h2>
+              <p>
+                {pausedBy === username ? 'You' : pausedBy} paused the game.
+              </p>
+              <div className="pause-status">
+                <span>💠 You: {pausesRemaining} pause{pausesRemaining !== 1 ? 's' : ''} left</span>
+                <span>💠 Opponent: {opponentPausesRemaining} pause{opponentPausesRemaining !== 1 ? 's' : ''} left</span>
+              </div>
+              <p>
+                Resuming in {pauseCountdown ?? 0} second{(pauseCountdown ?? 0) !== 1 ? 's' : ''}...
+              </p>
+            </div>
+          </div>
+        )}
+
+        {showRematchRequest && (
+          <div className="rematch-overlay">
+            <div className="rematch-modal">
+              <h2>Rematch Request</h2>
+              <p>{rematchRequester} wants a rematch!</p>
+              <div className="rematch-buttons">
+                <button
+                  onClick={() => handleRematchResponse(true)}
+                  className="accept-btn"
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={() => handleRematchResponse(false)}
+                  className="decline-btn"
+                >
+                  Decline
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showPlayer2StakingModal && stakingData && (
+          <div className="transaction-overlay">
+            <div className="transaction-modal">
+              <h2>💎 Staked Match</h2>
+              <p style={{ marginBottom: '20px' }}>
+                This is a staked match. You need to stake {stakingData.stakeAmount} PC to join.
+              </p>
+
+              {stakingErrorMessage && !isPlayer2Staking ? (
+                <>
+                  <div style={{
+                    backgroundColor: '#ff4444',
+                    color: 'white',
+                    padding: '15px',
+                    borderRadius: '8px',
+                    marginBottom: '20px',
+                    fontSize: '14px'
+                  }}>
+                    ❌ {stakingErrorMessage}
+                  </div>
+                  <p style={{ fontSize: '14px', color: '#888', marginBottom: '20px' }}>
+                    {isConnected
+                      ? `Your wallet: ${userAddress?.slice(0, 10)}...${userAddress?.slice(-4)}`
+                      : 'Please connect your wallet first'}
+                  </p>
+                  <div className="rematch-buttons">
+                    <button
+                      onClick={handlePlayer2Stake}
+                      className="accept-btn"
+                      disabled={!isConnected}
+                    >
+                      Retry Staking
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowPlayer2StakingModal(false);
+                        setStakingData(null);
+                        setStakingErrorMessage(null);
+                        if (socketRef.current && stakingData?.roomCode) {
+                          socketRef.current.emit('leaveRoomBeforeStaking', { roomCode: stakingData.roomCode });
+                        }
+                        navigate('/pong');
+                      }}
+                      className="decline-btn"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : !isPlayer2Staking ? (
+                <>
+                  <p style={{ fontSize: '14px', color: '#888', marginBottom: '20px' }}>
+                    {isConnected
+                      ? `Your wallet: ${userAddress?.slice(0, 10)}...${userAddress?.slice(-4)}`
+                      : 'Please connect your wallet first'}
+                  </p>
+                  <div className="rematch-buttons">
+                    <button
+                      onClick={handlePlayer2Stake}
+                      className="accept-btn"
+                      disabled={!isConnected}
+                    >
+                      Stake & Play
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowPlayer2StakingModal(false);
+                        setStakingData(null);
+                        setStakingErrorMessage(null);
+                        // Emit leaveRoom before navigating so backend knows we're leaving before staking
+                        if (socketRef.current && stakingData?.roomCode) {
+                          socketRef.current.emit('leaveRoomBeforeStaking', { roomCode: stakingData.roomCode });
+                        }
+                        navigate('/pong');
+                      }}
+                      className="decline-btn"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h3>
+                    {isPlayer2StakingPending && 'Confirm Transaction in Wallet...'}
+                    {isPlayer2StakingConfirming && 'Transaction Confirming...'}
+                  </h3>
+                  <div className="transaction-spinner"></div>
+                  <p>
+                    {isPlayer2StakingPending && 'Please confirm the transaction in your wallet'}
+                    {isPlayer2StakingConfirming && 'Waiting for blockchain confirmation'}
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        <canvas ref={canvasRef} />
+
+        <Dialog
+          dialogState={dialogState}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      </div>
+    </section>
   );
 };
 

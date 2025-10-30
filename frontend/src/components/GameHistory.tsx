@@ -122,12 +122,10 @@ const GameHistory: React.FC<GameHistoryProps> = ({ savedUsername }) => {
     const num = parseFloat(value);
     if (isNaN(num)) return '0';
     
-    // For very small numbers, use toPrecision(4) for 4 significant figures
     if (num < 1) {
       return parseFloat(num.toPrecision(4)).toString();
     }
     
-    // For larger numbers, round to 4 decimal places
     return num.toFixed(4);
   };
 
@@ -153,7 +151,7 @@ const GameHistory: React.FC<GameHistoryProps> = ({ savedUsername }) => {
     <div className="game-history-container">
       <div className="game-history-header">
         <button onClick={() => navigate('/pong')} className="back-button">← Back</button>
-        <h1>Game History</h1>
+        <h1 className="font-[1rem] md:font-[1.5rem]">Game History</h1>
         <AddressDisplay />
       </div>
 
@@ -181,8 +179,6 @@ const GameHistory: React.FC<GameHistoryProps> = ({ savedUsername }) => {
           </div>
         </div>
       )}
-
-      {/* Filter Toolbar */}
       <div className="filter-toolbar">
         <div className="filter-group">
           <span className="filter-group-label">Result:</span>
